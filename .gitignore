@@ -1,0 +1,33 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# my adds
+# TODO: ty icons se budou měnit, takže pak ještě celej repozitář na githubu bude potřeba upravit (aby se to tvářilo seriózně)
+src-tauri/icons/
+src-tauri/capabilities/
+src/assets/
+src-tauri/.gitignore
+package-lock.json
+.vscode/

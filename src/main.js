@@ -85,6 +85,7 @@ document.getElementById('btn-new').addEventListener('click', async () => {
 // TODO: hledání, toto jsem zatím vůbec nepromýšlel jakým způsobem by se to mělo implememtovat
 // TODO: Rust kód v main.rs čte a zapisuje notes přímo do složky na disku — jednodušší, ale později připadá v úvahu SQLite (komplexní dotazy, filtrování, tagy, full text search)
 // TODO: ten fronted nějak vyřešit ještě, jestli se to dá celý nastavit nějak ještě jinak (idk, promyslet)
+// TODO: další věc je to, že se ten adresář /notes ani nevytvořil (nikde jsem ho nenašel, nevím jestli je to tím, že ta aplikace prostě není deploynutá, ale dává smysl, že by v source code adresáři nebyl)
 document.getElementById('search').addEventListener('input', async e => {
   const query = e.target.value.toLowerCase();
   if (!query) { renderList(allNotes); return; }

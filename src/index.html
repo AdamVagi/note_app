@@ -11,22 +11,72 @@
     <script type="module" src="/main.js" defer></script>
   </head>
   <body>
-    <div class="sidebar">
+
+    <aside class="sidebar">
       <div class="sidebar-header">
         <span class="app-title">JOURNAL</span>
         <button id="btn-new" title="New note">+</button>
       </div>
-      <input id="search" type="text" placeholder="Search notes..." />
+      
       <div id="note-list"></div>
-    </div>
+    </aside>
 
-    <div class="editor-panel">
-      <textarea id="editor" placeholder="Write your note in Markdown..."></textarea>
-    </div>
+    <main class="main-content">
+      <div class="container">        
+        <div id="journal-entries">
+          
+          <article class="entry">
+            <div class="date">2026-03-30</div>
+            <div class="content">
+              <p>Tohle je ukázkový text v <strong>Markdownu</strong>, který se zrenderoval do třídy <code>.content</code>.</p>
+            </div>
+          </article>
 
-    <div class="preview-panel">
-      <div id="preview"></div>
-    </div>
+          <article class="entry">
+            <div class="date">2026-03-30</div>
+            <div class="content">
+              <p>Tohle je ukázkový text v <strong>Markdownu</strong>, který se zrenderoval do třídy <code>.content</code>.</p>
+            </div>
+          </article>
+
+          <article class="entry">
+            <div class="date">2026-03-30</div>
+            <div class="content">
+              <p>Tohle je ukázkový text v <strong>Markdownu</strong>, který se zrenderoval do třídy <code>.content</code>.</p>
+            </div>
+          </article>
+
+          <article class="entry">
+            <div class="date">2026-03-30</div>
+            <div class="content">
+              <p>Tohle je ukázkový text v <strong>Markdownu</strong>, který se zrenderoval do třídy <code>.content</code>.</p>
+            </div>
+          </article>
+
+          <article class="entry">
+            <div class="date">2026-03-30</div>
+            <div class="content">
+              <p>Tohle je ukázkový text v <strong>Markdownu</strong>, který se zrenderoval do třídy <code>.content</code>.</p>
+            </div>
+          </article>
+
+          <article class="entry">
+            <div class="date">2026-03-30</div>
+            <div class="content">
+              <p>Tohle je ukázkový text v <strong>Markdownu</strong>, který se zrenderoval do třídy <code>.content</code>.</p>
+            </div>
+          </article>
+
+          <article class="entry">
+            <div class="date">2026-03-30</div>
+            <div class="content">
+              <p>Tohle je ukázkový text v <strong>Markdownu</strong>, který se zrenderoval do třídy <code>.content</code>.</p>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </main>
     
   </body>
 </html>

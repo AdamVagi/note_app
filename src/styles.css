@@ -1,4 +1,3 @@
-
 * {
     margin: 0;
     padding: 0;
@@ -16,7 +15,7 @@ body {
 }
 
 /* ============================================================
-   SIDEBAR — seznam poznámek
+   SIDEBAR — Boční panel
    ============================================================ */
 
 .sidebar {
@@ -66,25 +65,10 @@ body {
     color: #ffffff;
 }
 
-#search {
-    background: #0a0a0a;
-    border: none;
-    border-bottom: 1px solid #2a2a2a;
-    color: #d0d0d0;
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 0.9rem;
-    padding: 0.7rem 1rem;
-    outline: none;
-    width: 100%;
-}
-
-#search::placeholder {
-    color: #555555;
-}
-
 #note-list {
     overflow-y: auto;
     flex: 1;
+    padding: 0.5rem 0;
 }
 
 .note-item {
@@ -132,59 +116,78 @@ body {
 }
 
 /* ============================================================
-   EDITOR + PREVIEW — dva panely vedle sebe
+   MAIN CONTENT — Hlavní blok s poznámkami
    ============================================================ */
 
-.editor-pane,
-.preview-pane {
+.main-content {
     flex: 1;
     height: 100vh;
     overflow-y: auto;
+    padding: 3rem 2rem;
 }
 
-.editor-pane {
-    border-right: 1px solid #2a2a2a;
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-#editor {
-    width: 100%;
-    height: 100%;
-    background: #0f0f0f;
-    color: #d0d0d0;
-    font-family: 'Courier New', monospace;
-    font-size: 0.95rem;
-    line-height: 1.8;
+.main-content h1 {
+    color: #ffffff;
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: 0.3rem;
+    margin-bottom: 3rem;
+    text-transform: uppercase;
+}
+
+.entry {
+    background: #1a1a1a;
     padding: 2rem;
-    border: none;
-    outline: none;
-    resize: none;
+    margin-bottom: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid #2a2a2a;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.entry:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.7);
+    border-color: #3a3a3a;
+}
+
+.date {
+    color: #888888;
+    font-size: 1.3rem;
+    font-weight: 600;
+    letter-spacing: 0.15rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid #2a2a2a;
 }
 
 /* ============================================================
-   PREVIEW — styl jako původní .content
+   CONTENT — Stylování vygenerovaného HTML z Markdownu
    ============================================================ */
 
-#preview {
-    padding: 2rem;
+.content {
     color: #d0d0d0;
     font-size: 1.05rem;
     font-weight: 400;
     line-height: 1.8;
-    max-width: 2750px;
-    margin: 0 auto;
 }
 
-/* Nadpisy */
-#preview h1 {
+.content h1 {
     display: block;
     color: #ffffff;
     font-size: 1.6rem;
     font-weight: 700;
     margin: 1.2rem 0 0.6rem;
     letter-spacing: 0.1rem;
+    text-transform: none;
 }
 
-#preview h2 {
+.content h2 {
     display: block;
     color: #cccccc;
     font-size: 1.3rem;
@@ -192,7 +195,7 @@ body {
     margin: 1rem 0 0.5rem;
 }
 
-#preview h3 {
+.content h3 {
     display: block;
     color: #aaaaaa;
     font-size: 1.1rem;
@@ -200,22 +203,19 @@ body {
     margin: 0.8rem 0 0.4rem;
 }
 
-/* Odstavce */
-#preview p {
+.content p {
     margin-bottom: 1rem;
     font-weight: 550;
 }
 
-/* Inline kód */
-#preview code {
+.content code {
     background: #0a0a0a;
     padding: 0.2rem 0.5rem;
     border-radius: 4px;
     font-family: 'Courier New', monospace;
 }
 
-/* Blok kódu */
-#preview pre {
+.content pre {
     background: #0a0a0a;
     border: 1px solid #2a2a2a;
     border-radius: 6px;
@@ -224,44 +224,42 @@ body {
     margin-bottom: 1rem;
 }
 
-#preview pre code {
+.content pre code {
     background: none;
     padding: 0;
     font-size: 0.92rem;
     color: #b0b0b0;
 }
 
-/* Seznamy */
-#preview ul,
-#preview ol {
+.content ul,
+.content ol {
     padding-left: 1.6rem;
     margin-bottom: 1rem;
 }
 
-#preview li {
+.content li {
     margin-bottom: 0.4rem;
     font-weight: 550;
     line-height: 1.7;
 }
 
-#preview ul li::marker {
+.content ul li::marker {
     color: #555555;
 }
 
-#preview ol li::marker {
+.content ol li::marker {
     color: #666666;
     font-weight: 600;
 }
 
-/* Tabulky */
-#preview table {
+.content table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 1.2rem;
     font-size: 0.98rem;
 }
 
-#preview th {
+.content th {
     background: #111111;
     color: #ffffff;
     padding: 0.6rem 1rem;
@@ -271,18 +269,17 @@ body {
     border-bottom: 2px solid #333333;
 }
 
-#preview td {
+.content td {
     padding: 0.55rem 1rem;
     border-bottom: 1px solid #2a2a2a;
     color: #cccccc;
 }
 
-#preview tr:hover td {
+.content tr:hover td {
     background: #111111;
 }
 
-/* Citace */
-#preview blockquote {
+.content blockquote {
     border-left: 3px solid #444444;
     margin: 1rem 0;
     padding: 0.5rem 1rem;
@@ -292,46 +289,42 @@ body {
     border-radius: 0 6px 6px 0;
 }
 
-/* Horizontální čára */
-#preview hr {
+.content hr {
     border: none;
     border-top: 1px solid #2a2a2a;
     margin: 1.5rem 0;
 }
 
-/* Tučné a kurzíva */
-#preview strong {
+.content strong {
     color: #ffffff;
     font-weight: 700;
 }
 
-#preview em {
+.content em {
     color: #aaaaaa;
 }
 
-/* Odkazy */
-#preview a {
+.content a {
     color: #8888ff;
     text-decoration: none;
 }
 
-#preview a:hover {
+.content a:hover {
     text-decoration: underline;
 }
 
-/* ============================================================
-   RESPONSIVE — pro případ menšího okna
-   ============================================================ */
-
-@media (max-width: 900px) {
-    .preview-pane {
-        display: none;
-    }
-}
-
-@media (max-width: 600px) {
+/* RESPONSIVE */
+@media (max-width: 768px) {
     .sidebar {
-        width: 180px;
-        min-width: 180px;
+        width: 200px;
+        min-width: 200px;
+    }
+    
+    .main-content {
+        padding: 2rem 1rem;
+    }
+
+    .entry {
+        padding: 1.5rem;
     }
 }

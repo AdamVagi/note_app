@@ -4,6 +4,10 @@
 // invoke() -> propojení frontend JavaScript a backend Rust
 import { invoke } from '@tauri-apps/api/core';
 
+// TODO: obecně v javascriptu ještě nic nefunguje, nic jsem nenapojoval a taky tady to všechno potřebuju napřed pochopit
+// TODO: toto taky projít všechno, jak to všechno funguje, vůbec nevím
+// TODO: + bude potřeba nabindovat všechny tlačítka aby fungovaly (ale to až později)
+
 let currentFile = null;
 let saveTimer = null;
 let allNotes = [];
@@ -40,8 +44,10 @@ function renderList(files) {
     // Load preview text asynchronously
     invoke('read_note', { filename }).then(content => {
       const el = document.getElementById(`prev-${filename}`);
-      if (el) el.textContent = content.replace(/[#*`_]/g, '').slice(0, 60) || '(empty)';
-    });
+      if (el && content) {
+        el.textContent = content.replace(/[#*`_]/g, '').slice(0, 45) || '(empty)';
+      }
+    }).catch(() => {});
   });
 }
 

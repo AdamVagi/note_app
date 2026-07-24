@@ -7,7 +7,12 @@ import { invoke } from '@tauri-apps/api/core';
 // TODO: obecně v javascriptu ještě nic nefunguje, nic jsem nenapojoval a taky tady to všechno potřebuju napřed pochopit
 // TODO: toto taky projít všechno, jak to všechno funguje, vůbec nevím
 // TODO: + bude potřeba nabindovat všechny tlačítka aby fungovaly (ale to až později)
+// TODO: vedle feedbacku bych pridal i volinteer dono pres paypal treba (for more development projects a for improving current projects)
 
+//------------------
+// TODO: je potřeba si opravdu sepsat kompletní funkcionalitu celé aplikace, abych přesně věděl, co mám kódit !!!!!
+//------------------
+/*
 let currentFile = null;
 let saveTimer = null;
 let allNotes = [];
@@ -106,4 +111,4 @@ document.getElementById('search').addEventListener('input', async e => {
 
 // during boot, all nodes are loaded
 await loadNoteList();
-if (allNotes.length > 0) await openNote(allNotes[0]);
+if (allNotes.length > 0) await openNote(allNotes[0]);*/

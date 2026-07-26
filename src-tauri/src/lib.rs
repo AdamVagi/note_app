@@ -18,7 +18,6 @@ use tauri::Manager;         // important pro path volání
 // unwrap() ->  jestli je tam hodnota, vrať ji, jinak program skončí
 // join() ->    do path vloží path + parametr, kterým může být například soubor
 
-
 // vrací path do vytvořeného adresáře "notes" pro uložení notes 
 fn notes_dir(app: &tauri::AppHandle) -> PathBuf{
     // zjištění path pro složku, kde budou uložena data aplikace
@@ -35,6 +34,8 @@ fn notes_dir(app: &tauri::AppHandle) -> PathBuf{
 // setter = funkce, která ti umožní změnit (zapsat) hodnotu private proměnné (často i s kontrolou, zda zadáváš platná data)
 // atribute makro = označení -> #[jmeno_makra] nad funkcí nebo strukturou
 //                = instrukce pro kompilátor, když chceme vygenerovat ještě nějaký další kód při překladu (moc jsem nepochopil princip této věci), asi funkcionalita, která dělá něco s tím kódem (externě), ale potřebná pro spuštění (funkčnost, která se uvnitř kódu těžce implementuje)
+
+// TODO: tady jsou essential funkce pro celou app (přídání, odstranění, update notes, ale momentálně to nepotřebuju)
 
 // označení pro makro
 #[tauri::command]

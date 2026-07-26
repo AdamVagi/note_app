@@ -242,6 +242,17 @@ body {
     padding: 0.55rem 0;
 }
 
+/* ============================================================
+   SPA (single page a..), nastavení pro tento typ zobrazení
+   ============================================================ */
+.app-view{
+    display:none;
+}
+
+.app-view.active{
+    display:block;
+}
+
 /* TODO: also go throught this: */
 /* ============================================================
    MAIN CONTENT — Hlavní blok s poznámkami

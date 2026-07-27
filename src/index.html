@@ -47,7 +47,7 @@
       </div>
 
       <div class="sidebar-footer">
-        <button class="footer-btn" title="settings" data-target="view-settings">
+        <button class="footer-btn" title="Settings" data-target="view-settings">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
           <span class="label">Settings</span>
         </button>
@@ -72,29 +72,179 @@
       </div>
     </aside>
 
-
-    <! -- TODO: zbytek okna aplikace (full rozlišení - sidebar = this),
-          všechno je to v tomto jednom html souboru na jedné stránce, takže
-          všechno co se bude zobrazovat, tak přijde do této sekce (main-content) --> 
+    <!-- zbytek okna aplikace (full rozlišení - sidebar = this), jeden html souboru
+         všechno se zobrazuje na jedné stránce, takže zbytek přijde do této sekce (main-content)-->
+ 
     <main class="main-content">
-      <div class="container">
-        <section id="view-settings" class="app-view"> 
-          <h2>SETTINGS</h2>
-          <p>someday there will be </p>
-        </section>
+      <div class="settings-container">
+                                  <!-- 2 třídy pro lepší práci v css-->
+        <section id="view-settings" class="app-view settings-card">
 
-        <section id="view-about" class="app-view">
-          <h2>ABOUT APP</h2>
-          <p>Verze 1.0.0 — Vytvořeno v Tauri & JS.</p>
+          <div class="settings-header">
+            <h2>Settings</h2>
+            <button class="close-btn" id="close-settings" title="Close" data-target="view-journal">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div> 
+
+          <div class="settings-content">
+
+            <div class="settings-group">
+              <div class="setting-item">
+                <div class="setting-info">
+                  <label for="theme-toggle">Colour Theme:</label>
+                  <span class="setting-desc">Switch between light and dark theme</span>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="theme-toggle" unchecked>
+                  <span class="slider"></span>
+                </label>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-info">
+                  <label for="font-size">Font Size:</label>
+                  <span class="setting-desc">Adjust the text size</span>
+                </div>
+                <div class="range-wrapper">
+                  <span style="font-size: 0.85rem;">A</span>
+                  <input type="range" id="font-size" min="12" max="22" value="16" step="1">
+                  <span style="font-size: 1.25rem;">A</span>
+                </div>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-info">
+                  <label for="font-family">Typography:</label>
+                  <span class="setting-desc">Choose your preferred font style</span>
+                </div>
+                <select id="font-family" class="custom-select">
+                  <option value="system-ui" selected>System Default</option>
+                  <option value="sans-serif">Sans-Serif (Modern)</option>
+                  <option value="serif">Serif (Classic)</option>
+                  <option value="monospace">Monospace (Code)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="settings-group">
+              <h3>Data & Reset</h3>
+              <div class="setting-item">
+                <div class="setting-info">
+                  <label>Reset Settings:</label>
+                  <span class="setting-desc">Restore default UI preferences</span>
+                </div>
+                <button class="btn-danger-outline">Reset to Default</button>
+              </div>
+            </div>
+          </div>
+        </section>
+              
+        <!-- ideas for SETTINGS:
+            - změna layoutu poznámek na main page - to ještě hodně promyslet (live change)
+            - Export / Import nastavení: Uložení preferencí do .json souboru (zatím optional)
+            - Ukládání dat (Local Storage): Přepínač, zda se má stav aplikace ukládat lokálně v prohlížeči (tohle think it over over time)
+            - -->    
+
+        <section id="view-about" class="app-view settings-card">
+
+          <div class="about-header">
+            <h2>About App</h2>
+            <button class="close-btn" id="close-about" title="Close" data-target="view-journal">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+
+          <div class="about-content">
+
+            <div class="about-group">
+              <h3>Application Details</h3>
+
+              <div class="about-item">
+                <div class="about-info">
+                  <label>Version:</label>
+                  <div class="status-badge">
+                    <span class="status-dot"></span>
+                    <span>IN PROGRESS (1.0.0)</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="about-item">
+                <div class="about-info">
+                  <label>Technology:</label>
+                  <span class="setting-desc">Built with Tauri, Rust & JS</span>
+                </div>
+              </div>
+
+              <div class="about-item">
+                <div class="about-info">
+                  <label>License:</label>
+                  <span class="setting-desc">MIT License — Personal & Non-commercial</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="about-group">
+              <h3>Links & Resources</h3>
+
+              <div class="about-item">
+                <div class="about-info">
+                  <label>Source Code:</label>
+                  <span class="about-desc">View repository on GitHub</span>
+                </div>
+                <a href="https://github.com/AdamVagi/note_app" target="_blank" rel="noopener" class="btn-link">
+                  GitHub
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                    <polyline points="15 3 21 3 21 9"></polyline>
+                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                  </svg>
+                </a>
+              </div>
+
+              <div class="about-item">
+                <div class="about-info">
+                  <label>What's new in latest version:</label>
+                  <div class="status-badge">
+                    <span class="status-dot"></span>
+                    <span>BUILD IN PROGRESS</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="about-copyright">
+              <p>© 2026 Created with passion. All rights reserved.</p>
+            </div>
+
+          </div>
+
+          <!-- ideas for About: 
+           - Číslo verze + změny, které byly vytvořeny v této verzi
+           - Kontrola aktualizací = tlačítko, které přes JS/Tauri prověří, zda není k dispozici novější verze
+           - Použitý Tech-Stack: Zobrazení malých štítků/tagů (Tauri, Rust, Vanilla JS, CSS3), což vypadá skvěle pro vývojáře i zvědavé uživatele
+           - Licence (MIT License / Open Source) a odkaz na licenční ujednání
+           - odkaz na Github -->           
         </section>
 
         <section id="view-improvement" class="app-view">
           <h2>USER FEEDBACKS</h2>
           <p>Nápady na vylepšení aplikace...</p>
+
+          <!-- ideas for feedback: 
+           - tady to napojit na tu funkci, že mi to pošle email (claude chat) 
+           - no a ten voluteer paypal pro dono - Kávový / Donut button (PayPal/BuyMeACoffee): Samostatný stylový block/řádek pro podporu vývoje -->
         </section>
 
-        <! -- odtud začínají záznamy nodů ------ > 
-        <! -- TODO: ty všechny záznamy bude taky napojit přes javascript > 
+        <!-- odtud začínají záznamy nodů -->
+        <!-- TODO: ty všechny záznamy bude taky napojit přes javascript --> 
         <section id="view-journal" class="app-view active">
           <article class="entry">
             <div class="date">2026-03-30</div>

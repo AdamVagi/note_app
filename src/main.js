@@ -40,7 +40,7 @@ function SidebarMovement() {
 function ButtonsNavigation() {
   
   // najdeme všechny buttony, které jsme schopni přepínat
-  const buttons = document.querySelectorAll(".footer-btn");
+  const buttons = document.querySelectorAll(".footer-btn, .close-btn");
 
     // když někdo klikne na tlačítko, tak se přepne na tu stránku (přes ještě jednu další funkci)
     for (const button of buttons)
@@ -55,7 +55,7 @@ function ButtonsNavigation() {
 }
   
 // buttons functionality connection to other pages (SPA = single page application)
-function navigateTo(viewId) {  // -> argument = id, který máme v HTML (view-settings)
+function navigateTo(viewId) {  // -> argument, který máme v HTML (data-target)
  
   // najde všechny elementy, který mají vlastnost = app-view (js je schopnej přepnout stránku podle ID)
   const allselectors = document.querySelectorAll('.app-view');

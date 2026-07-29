@@ -519,6 +519,7 @@ input:checked + .slider:before {
 
 .about-header h2 {
   margin: 0;
+  margin-left: 265px;
   font-size: 1.15rem;
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -571,7 +572,7 @@ input:checked + .slider:before {
   line-height: 1.4;
 }
 
-/* Minimalistický Status Badge (pro IN PROGRESS) */
+/* Minimalistický Status Badge (program IN PROGRESS) */
 .status-badge {
   display: inline-flex;
   align-items: center;
@@ -625,6 +626,53 @@ input:checked + .slider:before {
   border-top: 1px solid rgba(255, 255, 255, 0.05);
   font-size: 0.8rem;
   color: var(--text-muted);
+}
+
+
+/* ============================================================
+   FEEDBACK SECTION LAYOUT
+   ============================================================ */
+
+.feedback-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--card-border);
+  padding-bottom: 20px;
+  margin-bottom: 28px;
+}
+
+.feedback-header h2 {
+  margin: 0;
+  margin-left: 85px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-main);
+}
+
+.feedback-group {
+  margin-bottom: 28px;
+}
+
+.feedback-group h3 {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.feedback-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 /* TODO: also go throught this: */

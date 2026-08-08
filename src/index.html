@@ -21,12 +21,12 @@
       </div>
 
       <div class="sidebar-actions">
-        <button class="action-btn" id="btn-new" title="new-note">
+        <button class="action-open-btn" id="btn-new" title="New note">  
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           <span class="label">New Journal</span>
         </button>
         
-        <button class="action-btn" id="btn-search" title="search">
+        <button class="action-search-btn" id="btn-search" title="Search">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           <span class="label">Search</span>
         </button>
@@ -221,7 +221,7 @@
             </div>
 
             <div class="about-copyright">
-              <p>© 2026 Created with passion. All rights reserved.</p>
+              <p>© 2026 Created with passion.</p>
             </div>
 
           </div>
@@ -237,7 +237,7 @@
         <section id="view-improvement" class="app-view">
 
           <div class="feedback-header">
-            <h2>About App</h2>
+            <h2>App feedback</h2>
             <button class="close-btn" id="close-feedback" title="Close" data-target="view-journal">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -247,12 +247,19 @@
           </div>
           
           <div class="feedback-content">
-
             <div class="feedback-group">
               <h3>PAYPAL DONO NA VÝVOJ APLIKACE (VOLUNTEER)</h3>
 
               <div class="feedback-item">
-                <div class="about-info">
+                <div class="feedback-info">
+                  <label>Odkaz:</label>
+                </div>
+              </div>
+
+              <h3>SEND ME YOUR SUGGESTIONS FOR APP UPDATE THROUGHT THIS: (form sended throught email to me)</h3>
+
+              <div class="feedback-item">
+                <div class="feedback-info">
                   <label>Odkaz:</label>
                 </div>
               </div>
@@ -263,6 +270,33 @@
            - tady to napojit na tu funkci, že mi to pošle email (claude chat) 
            - no a ten voluteer paypal pro dono - Kávový / Donut button (PayPal/BuyMeACoffee): Samostatný stylový block/řádek pro podporu vývoje -->
         </section>
+
+        <!-- =========================================
+            END OF SECTIONS, START OF GLOBAL OVERLAYS (zatím jenom jedno)
+            ========================================= -->
+
+        <div id="node-overlay" class="hidden">
+          <div class="overlay">
+            <div class="overlay-header">
+              <h2>NODE ADDING</h2>
+              <button class="close-new-node-btn" id="close-new-node" title="Close">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+
+            <div class="overlay-body">
+              <textarea id="node-content" placeholder="Insert your thoughts..." rows="6"></textarea>
+            </div>
+
+            <div class="overlay-footer">
+              <button class="add-node-btn" id="add-node">Add node</button>
+            </div>
+          </div>
+        </div>
+
 
         <!-- odtud začínají záznamy nodů -->
         <!-- TODO: ty všechny záznamy bude taky napojit přes javascript --> 
@@ -293,6 +327,8 @@
             </div>
           </article>
         </section>
+
+        <!-- TODO: celkově to všechno sjednotit jazykově (jak kód tak co se zobrazuje do reálné aplikace, tak přepsat do AJ - teď zmatek) --> 
       </div>
     </main>    
   </body>

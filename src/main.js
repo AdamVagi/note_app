@@ -10,7 +10,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     SidebarMovement();
     ButtonsNavigation();
-    // navigateTo(viewId);
+    // NavigateTo(viewId); -> nemůže bc tu funkci nepotřebujeme (volá se z jiné funkce)
+    NodeOverlay();
+    AutoOverlayAdjustment();
 });
 
 
@@ -42,20 +44,20 @@ function ButtonsNavigation() {
   // najdeme všechny buttony, které jsme schopni přepínat
   const buttons = document.querySelectorAll(".footer-btn, .close-btn");
 
-    // když někdo klikne na tlačítko, tak se přepne na tu stránku (přes ještě jednu další funkci)
-    for (const button of buttons)
-    {
-        button.addEventListener("click", function () {
-
-            // chceme title
-            const target = button.getAttribute("data-target");
-            navigateTo(target);
-        });
-    }
+  // když někdo klikne na tlačítko, tak se přepne na tu stránku (přes ještě jednu další funkci)
+  for (const button of buttons) {
+    
+    button.addEventListener("click", function () {
+      
+      // chceme title
+      const target = button.getAttribute("data-target");
+      NavigateTo(target);
+    });
+  }
 }
   
 // buttons functionality connection to other pages (SPA = single page application)
-function navigateTo(viewId) {  // -> argument, který máme v HTML (data-target)
+function NavigateTo(viewId) {  // -> argument, který máme v HTML (data-target)
  
   // najde všechny elementy, který mají vlastnost = app-view (js je schopnej přepnout stránku podle ID)
   const allselectors = document.querySelectorAll('.app-view');
@@ -76,7 +78,40 @@ function navigateTo(viewId) {  // -> argument, který máme v HTML (data-target)
   }
 }
 
+// another function bc overlay is not the same as page in SPA (opening and closing needs to be handle differently)
+function NodeOverlay() {
 
+  // rozdělím to na opening a closing button pro overlay
+  const open_button = document.querySelector(".action-open-btn");
+  const overlay = document.getElementById("node-overlay");
+
+  open_button.addEventListener("click", function () {
+    overlay.classList.remove("hidden");
+  });
+
+  // tady je nějakým způsobem waiting
+
+  const close_button = document.querySelector(".close-new-node-btn");
+  
+  close_button.addEventListener("click", function () {
+      overlay.classList.add("hidden");
+  });
+}
+
+// function for allignment adjustment during node inserting (automatic)
+function AutoOverlayAdjustment() {
+
+  const text_area = document.getElementById('node-content');
+
+  text_area.addEventListener('input', function() {
+
+    // first reset výšky na 'auto', aby se pole mohlo případně i zmenšit, když uživatel maže text
+    this.style.height = 'auto';
+    
+    // then set výšky podle skutečného obsahu + přičteme 2px kvůli borderu
+    this.style.height = (this.scrollHeight + 2) + 'px';
+  });
+}
 /* ============================================================
    ZÁKLADNÍ KOSTRA, KTEROU CHCI POUŽÍT JAKO JENOM API PRO CONNECTION HTML -> RUST
    ============================================================ */      

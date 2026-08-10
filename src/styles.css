@@ -825,7 +825,6 @@ input:checked + .slider:before {
   background: #2563eb; 
 }
 
-/* TODO: also go throught this: */
 /* ============================================================
    MAIN CONTENT — Hlavní blok s poznámkami
    ============================================================ */
@@ -878,7 +877,7 @@ input:checked + .slider:before {
 }
 
 /* ============================================================
-   CONTENT — Stylování vygenerovaného HTML z Markdownu
+   CONTENT — VISUAL STYLING OF Markdownu GENERATED ONTO UI
    ============================================================ */
 
 .content {

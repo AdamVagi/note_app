@@ -89,29 +89,82 @@ function NodeOverlay() {
     overlay.classList.remove("hidden");
   });
 
-  // tady je nějakým způsobem waiting
-
+  // closing (in the future maybe duplicate due to add btn)
   const close_button = document.querySelector(".close-new-node-btn");
   
   close_button.addEventListener("click", function () {
       overlay.classList.add("hidden");
+  });
+
+  // all overlay buttons related functionality
+  const node_add = document.querySelector(".add-node-btn");
+
+  node_add.addEventListener("click", async function () {
+
+    // first je potřeba vytvořit prázdnou poznámku (máme filename + date dovnitř nody)
+    const newNoteData = await invoke("new_note");
+    const content = document.getElementById("node-content").value;
+
+    // TODO: + tady na konci bude potřeba udělat bool check  
+    const odpoved = await invoke("insert_note", {
+        filename: newNoteData.filename,
+        content: content
+    });
+
+    // lze zavřít overlay a zaktualizovat UI
+    if(odpoved) {
+      document.getElementById("node-overlay").classList.add("hidden");
+      document.getElementById("node-content").value = ""; // vyčistí textové pole
+      loadAndRenderNotes(); // Obnoví seznam na obrazovce
+    }
   });
 }
 
 // function for allignment adjustment during node inserting (automatic)
 function AutoOverlayAdjustment() {
 
-  const text_area = document.getElementById('node-content');
+  const text_area = document.getElementById("node-content");
 
-  text_area.addEventListener('input', function() {
+  text_area.addEventListener("input", function() {
 
     // first reset výšky na 'auto', aby se pole mohlo případně i zmenšit, když uživatel maže text
-    this.style.height = 'auto';
+    this.style.height = "auto";
     
     // then set výšky podle skutečného obsahu + přičteme 2px kvůli borderu
-    this.style.height = (this.scrollHeight + 2) + 'px';
+    this.style.height = (this.scrollHeight + 2) + "px";
   });
 }
+
+// funkce, která se zavolá při startu aplikace
+async function loadAndRenderNotes() {
+  // rust seřadí a vrátí celé objekty NoteData
+  const notes = await invoke("list_notes"); 
+
+  const container = document.getElementById("notes-container");
+  container.innerHTML = ""; // Vyčištění UI
+
+  notes.forEach((note) => {
+    // vytvoření HTML prvku pro každou poznámku
+    const noteCard = document.createElement("div");
+    noteCard.className = "note-card";
+    noteCard.dataset.filename = note.filename;
+
+    noteCard.innerHTML = `
+      <article class="entry">
+        <div class="note-date">${note.date}</div>
+        <div class="content">
+          <p>${note.content || "<i>Prázdná poznámka...</i>"}</p>
+        </div>
+      </article>
+    `;
+
+    // Kliknutím na poznámku ji otevřeš k úpravám
+    noteCard.addEventListener("click", () => openNoteInEditor(note));
+
+    container.appendChild(noteCard);
+  });
+}
+
 /* ============================================================
    ZÁKLADNÍ KOSTRA, KTEROU CHCI POUŽÍT JAKO JENOM API PRO CONNECTION HTML -> RUST
    ============================================================ */      

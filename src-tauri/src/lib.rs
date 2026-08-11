@@ -31,6 +31,7 @@ fn notes_dir(app: &tauri::AppHandle) -> PathBuf{
     fs::create_dir_all(&path).unwrap();
 
     // print výpisy
+    // TODO: to pak odstranit (jen testing)
     println!("Složka s poznámkami se nachází zde: {:?}", path);
 
     path
@@ -58,18 +59,20 @@ fn parse_markdown_file(content: &str) -> (String, String, String) {
         let body = parts[2].trim().to_string();
 
         let mut id = String::new();
-        // ZMĚNA: Tady definujeme 'date' místo 'created_at'
         let mut date = String::new();
+        let mut favorite = false;
 
         for line in header.lines() {
             if line.starts_with("id:") {
                 id = line.replace("id:", "").trim().to_string();
             } else if line.starts_with("date:") {
                 date = line.replace("date:", "").trim().to_string();
+            } else if line.starts_with("favorite:") {
+                favorite = line.replace("favorite:", "").trim() == "true"; 
             }
         }
 
-        (date, id, body)
+        (date, id, favorite, body)
     } else {
         (String::new(), String::new(), content.to_string())
     }
@@ -86,6 +89,7 @@ struct NoteData {
     pub filename: String,          // podle názvu to budeme řadit
     pub date: String,              // date potřebujeme vypsat
     pub content: String,           // a content taky
+    pub favorite: bool,
 }
 
 // my inner knowledge update:
@@ -164,10 +168,20 @@ fn delete_note(app: tauri::AppHandle, filename: String) -> bool{
 }
 
 // TODO: 
-/*#[tauri::command]
-fn update_note(app: tauri::AppHandle) -> NoteData{
+fn update_note(app: tauri::AppHandle, filename: String, content: String, favorite: bool) -> bool {
+    let path = notes_dir(&app).join(&filename);
     
-}*/
+    // nejprve si přečteme stará data, abychom neztratili ID a Datum
+    if let Ok(existing_content) = std::fs::read_to_string(&path) {
+        let (date, id, _, _) = parse_markdown_file(&existing_content);
+        
+        // složíme to zpět s novým obsahem a novým stavem hvězdičky
+        let full_text = format!("---\nid: {}\ndate: {}\nfavorite: {}\n---\n{}", id, date, favorite, content);
+        
+        return std::fs::write(path, full_text).is_ok();
+    }
+    false
+}
 
 //---------------------
 // TODO: i am leaving it here for future (zatím není využití vymyšlený ještě)
@@ -197,8 +211,8 @@ fn list_notes(app: tauri::AppHandle) -> Vec<NoteData> {
                 
                 if filename.ends_with(".md") {
                     if let Ok(file_content) = std::fs::read_to_string(&path) {
-                        let (date, id, content) = parse_markdown_file(&file_content);
-                        notes.push(NoteData { id, filename, date, content });
+                        let (date, id, favorite, content) = parse_markdown_file(&file_content);
+notes.push(NoteData { id, filename, date, content, favorite });
                     }
                 }
             }

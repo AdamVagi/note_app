@@ -1038,3 +1038,60 @@ input:checked + .slider:before {
         padding: 1.5rem;
     }
 }
+
+/* ============================================================
+   BUTTONS ONTO NODES
+   ============================================================ */
+
+/* Tlačítka u poznámek */
+.entry-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #2a2a2a;
+    margin-bottom: 1rem;
+    padding-bottom: 0.8rem;
+}
+
+.entry-header .date {
+    border-bottom: none; /* Reset tvojí staré třídy .date */
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.entry-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-action {
+    background: transparent;
+    border: none;
+    color: #888;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: transform 0.2s, color 0.2s;
+}
+
+.btn-action:hover {
+    transform: scale(1.2);
+    color: #fff;
+}
+
+.btn-fav.active {
+    color: #eab308; /* Žlutá barva pro aktivní hvězdičku */
+}
+
+/* Zvýraznění při editaci */
+.entry.is-editing {
+    border-color: #3b82f6;
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+}
+
+.note-text[contenteditable="true"] {
+    outline: none;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 10px;
+    border-radius: 6px;
+    min-height: 50px;
+}

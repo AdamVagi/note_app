@@ -137,31 +137,80 @@ function AutoOverlayAdjustment() {
 
 // funkce, která se zavolá při startu aplikace
 async function loadAndRenderNotes() {
-  // rust seřadí a vrátí celé objekty NoteData
   const notes = await invoke("list_notes"); 
-
-  const container = document.getElementById("notes-container");
-  container.innerHTML = ""; // Vyčištění UI
+  
+  // Vykreslujeme to do view-journal
+  const container = document.getElementById("view-journal");
+  container.innerHTML = ""; // Vyčištění starých dat
 
   notes.forEach((note) => {
-    // vytvoření HTML prvku pro každou poznámku
-    const noteCard = document.createElement("div");
-    noteCard.className = "note-card";
-    noteCard.dataset.filename = note.filename;
+    // Vytvoříme obal poznámky
+    const article = document.createElement("article");
+    article.className = "entry";
+    article.dataset.filename = note.filename;
 
-    noteCard.innerHTML = `
-      <article class="entry">
-        <div class="note-date">${note.date}</div>
-        <div class="content">
-          <p>${note.content || "<i>Prázdná poznámka...</i>"}</p>
+    // Sestavíme HTML strukturu uvnitř
+    article.innerHTML = `
+      <div class="entry-header">
+        <div class="date">${note.date}</div>
+        <div class="entry-actions">
+          <button class="btn-action btn-fav ${note.favorite ? 'active' : ''}">${note.favorite ? '★' : '☆'}</button>
+          <button class="btn-action btn-edit">✏️</button>
         </div>
-      </article>
+      </div>
+      <div class="content">
+        <p class="note-text">${note.content || "<i>Prázdná poznámka...</i>"}</p>
+      </div>
     `;
 
-    // Kliknutím na poznámku ji otevřeš k úpravám
-    noteCard.addEventListener("click", () => openNoteInEditor(note));
+    // 1. Záchyt události pro hvězdičku
+    const favBtn = article.querySelector('.btn-fav');
+    favBtn.addEventListener('click', async () => {
+      // Změníme logickou hodnotu na opačnou
+      note.favorite = !note.favorite;
+      // Uložíme do Rustu
+      await invoke("update_note", { 
+        filename: note.filename, 
+        content: note.content, 
+        favorite: note.favorite 
+      });
+      // Překreslíme, aby se projevila změna
+      loadAndRenderNotes(); 
+    });
 
-    container.appendChild(noteCard);
+    // 2. Záchyt události pro tužku (Úprava textu)
+    const editBtn = article.querySelector('.btn-edit');
+    const textElement = article.querySelector('.note-text');
+
+    editBtn.addEventListener('click', async () => {
+      const isEditing = textElement.isContentEditable;
+
+      if (!isEditing) {
+        // ZAPNOUT ÚPRAVY
+        textElement.contentEditable = "true";
+        textElement.focus();
+        editBtn.textContent = '💾'; // Ikona uložení
+        article.classList.add('is-editing');
+      } else {
+        // VYPNOUT A ULOŽIT
+        textElement.contentEditable = "false";
+        editBtn.textContent = '✏️';
+        article.classList.remove('is-editing');
+        
+        // Získáme nový text
+        note.content = textElement.innerText;
+
+        // Uložíme do Rustu
+        await invoke("update_note", { 
+          filename: note.filename, 
+          content: note.content, 
+          favorite: note.favorite 
+        });
+      }
+    });
+
+    // Přidáme na stránku
+    container.appendChild(article);
   });
 }
 

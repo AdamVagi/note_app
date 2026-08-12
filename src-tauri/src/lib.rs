@@ -29,12 +29,7 @@ fn notes_dir(app: &tauri::AppHandle) -> PathBuf{
     path.push("notes");
     // pokud neexistuje -> vytvoř, pokud existuje jako notes, tak nech tak jak je (ošetření prvotního insertu)
     fs::create_dir_all(&path).unwrap();
-
-    // print výpisy
-    // TODO: to pak odstranit (jen testing)
-    println!("Složka s poznámkami se nachází zde: {:?}", path);
-
-    path
+    return path
 }
 
 // generování random stringu
@@ -50,46 +45,68 @@ fn random_string(length: usize) -> String {
         .collect()
 }
 
-// vytažení metadat ze souboru
-fn parse_markdown_file(content: &str) -> (String, String, String) {
+// knowledge okénko: TUPLE = funkce vrací jednu hodnotu typu (String, i32, bool), ale ta hodnota obsahuje 3 prvky
+
+// vytažení všech dat ze souboru (filename, date, favorite, content)
+fn parse_markdown_file(content: &str) -> (String, String, String, bool) {
+
+    // split podle --- na 3 části a ulož do seznamů odkazů na části textu (&str)
     let parts: Vec<&str> = content.splitn(3, "---").collect();
+
+    // preventive control (máme všechny části v souboru)
+    if parts.len() < 3 {
+        return (
+            String::new(),
+            String::new(),
+            content.to_string(),
+            false,
+        );
+    }
     
-    if parts.len() >= 3 {
-        let header = parts[1];
-        let body = parts[2].trim().to_string();
+    let header = parts[1];
+    // trim -> odstranění whitespaců na začátku a na konci
+    let body = parts[2].trim().to_string();
 
-        let mut id = String::new();
-        let mut date = String::new();
-        let mut favorite = false;
+    let mut filename = String::new();
+    let mut date = String::new();
+    // default chci false
+    let mut favorite = false;
 
-        for line in header.lines() {
-            if line.starts_with("id:") {
-                id = line.replace("id:", "").trim().to_string();
-            } else if line.starts_with("date:") {
-                date = line.replace("date:", "").trim().to_string();
-            } else if line.starts_with("favorite:") {
-                favorite = line.replace("favorite:", "").trim() == "true"; 
-            }
+    // rozdělení do lines (line 1 -> filename, line 2 -> date)
+    for line in header.lines() {
+        if line.starts_with("filename:") {
+            filename = line.replace("filename:", "").trim().to_string();
         }
 
-        (date, id, favorite, body)
-    } else {
-        (String::new(), String::new(), content.to_string())
+        if line.starts_with("date:") {
+            date = line.replace("date:", "").trim().to_string();
+        }
+
+        if line.starts_with("favorite:") {
+            let value = line.replace("favorite:", "").trim().to_string();
+
+            if value == "true" {
+                favorite = true;
+            }
+        }
     }
+
+    return (filename, date, body, favorite);
 }
 
 //------------------------
 // DATA STRUCTS:
 //------------------------
 
-// struct pro vypisování záznamů na frontend aplikace
+// struct pro záznamy (potřeba při volání list_notes dotazu - vrácení seznamu structů je pro js lepší a rychlejší)
+// TODO: ty všechny atributy jso pro mě novinka (nevím jestli jsou nesecary tam mít)
 #[derive(Serialize, Debug, Clone)]
 struct NoteData {
-    pub id: String,
-    pub filename: String,          // podle názvu to budeme řadit
+    // pub -> public
+    pub filename: String,          // podle názvu budu řadit + hledat
     pub date: String,              // date potřebujeme vypsat
-    pub content: String,           // a content taky
-    pub favorite: bool,
+    pub content: String,   
+    pub favorite: bool,     
 }
 
 // my inner knowledge update:
@@ -105,7 +122,7 @@ struct NoteData {
 // označení pro makro
 #[tauri::command]
 // vytvoření prázdné nody
-fn new_note(app: tauri::AppHandle) -> NoteData{
+fn new_note(app: tauri::AppHandle) -> String{
     
     // aktuální čas
     let now = chrono::Local::now();
@@ -121,21 +138,18 @@ fn new_note(app: tauri::AppHandle) -> NoteData{
     let path = notes_dir(&app).join(&filename);
 
     // insert header s metadaty
+    // TODO: tady je question jestli chceme filename celej file.md a nebo filename bez .md
     let initial_file_content = format!(
-        "---\ndate_created: {}\n---\n",
-        date_string
+        "---\nfilename: {}\ndate: {}\nfavorite: {}\n---\n",
+        filename, date_string, false
     );
 
     // vložení prázdné poznámky s hlavičkou
+    // TODO: neřešil jsem aby funkce byly schopny řešit result (takže _ znamená, že i když se to vkládání podělá, tak ta funkce ten error prostě přejde -> idk jestli right)
     let _ = fs::write(&path, initial_file_content);
 
-    // Vracíme struct, aby JS měl všechna data hned po vytvoření
-    NoteData {
-        id: random_id,
-        filename,
-        date: date_string,
-        content: String::new(),
-    }
+    // tady není potřeba return celého structu do js, protože tohle je jenom vytváření poznámky, ne žádná úprava
+    return filename;
 }
 
 #[tauri::command]
@@ -144,19 +158,38 @@ fn insert_note(app: tauri::AppHandle, filename: String, content: String) -> bool
     
     let path = notes_dir(&app).join(&filename);
 
-    // Přečteme soubor, abychom z něj dostali to původní id a datum
-    if let Ok(existing_content) = fs::read_to_string(&path) {
-        // Použijeme naši helper funkci na rozkódování!
-        let (date, id, _) = parse_markdown_file(&existing_content);
-        
-        // Znovu to složíme dohromady, ale s novým contentem z UI
-        let full_text = format!("---\nid: {}\ndate: {}\n---\n{}", id, date, content);
-        
-        // Zapíšeme a rovnou vrátíme true/false
-        return fs::write(path, full_text).is_ok();
+    // fs -> filesystem
+    // obsah není přímo String = Result<String, Error>, result může být buď Ok(String) nebo Err(Error)
+    let obsah = fs::read_to_string(&path);
+
+    if obsah.is_err() {
+        return false;
     }
-    
-    false
+
+    // vytáhneme z enumu hodnotu 
+    let existing_content = obsah.unwrap();
+
+    // ta funkce bude univerzální, takže si potřebuju vytáhnout z té odpovědi jenom
+    // filename + content máme, takže chci vrátit date + favorite bude vždycky false
+    let (_, date, _, _) = parse_markdown_file(&existing_content);
+
+    if date.is_empty() {
+        return false;
+    }
+
+    // znovu to složíme dohromady, ale s novým contentem z UI
+    let full_text = format!(
+        "---\nfilename: {}\ndate: {}\nfavorite: {}\n---\n{}",
+        filename, date, false, content
+    );
+
+    let write_result = fs::write(&path, full_text);
+
+    if write_result.is_err() {
+        return false;
+    }
+
+    return true;    
 }
 
 #[tauri::command]
@@ -167,25 +200,28 @@ fn delete_note(app: tauri::AppHandle, filename: String) -> bool{
     fs::remove_file(path).is_ok()
 }
 
-// TODO: 
+// update metadat + případně i contentu
+#[tauri::command]
+// TODO: update contentu ještě nevím jak udělat (zatím nefunguje)
 fn update_note(app: tauri::AppHandle, filename: String, content: String, favorite: bool) -> bool {
+
     let path = notes_dir(&app).join(&filename);
     
-    // nejprve si přečteme stará data, abychom neztratili ID a Datum
+    // stará data, chci date
     if let Ok(existing_content) = std::fs::read_to_string(&path) {
-        let (date, id, _, _) = parse_markdown_file(&existing_content);
+        let (filename, date, _, _) = parse_markdown_file(&existing_content);
         
-        // složíme to zpět s novým obsahem a novým stavem hvězdičky
-        let full_text = format!("---\nid: {}\ndate: {}\nfavorite: {}\n---\n{}", id, date, favorite, content);
-        
+        // složení zpět s novým obsahem a novým stavem favorite
+        let full_text = format!("---\nfilename: {}\ndate: {}\nfavorite: {}\n---\n{}", filename, date, favorite, content);
+
         return std::fs::write(path, full_text).is_ok();
     }
-    false
+    return false;
 }
 
 //---------------------
 // TODO: i am leaving it here for future (zatím není využití vymyšlený ještě)
-#[tauri::command]
+/*#[tauri::command]
 // vrátí obsah položky = node (souboru)
 fn read_note(app: tauri::AppHandle, filename: String) -> String {
 
@@ -194,34 +230,54 @@ fn read_note(app: tauri::AppHandle, filename: String) -> String {
     // otevře soubor, přečte ho a vrátí Result<String, Error>
     // unwrap_or_default - když se něco nepovede, tak nespadne, ale vrátí prázdnej string ("")
     fs::read_to_string(path).unwrap_or_default()
-}
+}*/
 
 // označení, že tato funkce se může volat v js
 #[tauri::command]
-// vrácení všech poznámek do jednoho seřazeného seznamu souborů.md
+// vrácení všech poznámek do jednoho seřazeného seznamu structů NodeData
 fn list_notes(app: tauri::AppHandle) -> Vec<NoteData> {
+
     let dir = notes_dir(&app);
+    // vytvoření prázdného seznamu, který bude dát měnit
     let mut notes: Vec<NoteData> = Vec::new(); 
 
-    if let Ok(entries) = fs::read_dir(&dir) {
-        for entry_result in entries {
-            if let Ok(entry) = entry_result {
-                let path = entry.path();
-                let filename = entry.file_name().to_string_lossy().to_string();
-                
-                if filename.ends_with(".md") {
-                    if let Ok(file_content) = std::fs::read_to_string(&path) {
-                        let (date, id, favorite, content) = parse_markdown_file(&file_content);
-notes.push(NoteData { id, filename, date, content, favorite });
-                    }
-                }
-            }
-        }
-    }
+    // pokus o načtení obsahu adresáře dir do entries, pokud ne, vrať notes 
+    let entries = match fs::read_dir(&dir) {
+        Ok(entries) => entries,
+        Err(_) => return notes,
+    };
 
-    // Seřazení podle názvu sestupně
+    // procházení všech položek v entries (pořád to jsou ještě enumy)
+    for entry_result in entries {
+        let entry = match entry_result {
+            Ok(entry) => entry,
+            Err(_) => continue,
+        };
+
+        // zobrazení cesty k souboru a osekání na naprosté minimum (file.md) + na string
+        let path = entry.path();
+        let filename = entry.file_name().to_string_lossy().to_string();
+
+        if !filename.ends_with(".md") {
+            continue;
+        }
+
+        // přečtení obsahu (pořád enum)
+        let file_content = match fs::read_to_string(&path) {
+            Ok(content) => content,
+            Err(_) => continue,
+        };
+
+        // výběr hodnot + vložení do structu
+        let (filename, date, content, favorite) = parse_markdown_file(&file_content);
+        let note = NoteData { filename, date, content, favorite,};
+
+        notes.push(note);
+    }
+        
+    // seřazení podle názvu sestupně
     notes.sort_by(|a, b| b.filename.cmp(&a.filename));
-    notes
+    return notes;
 }
 
 // TODO: dodělat něco jako update nebo write (až budu dělat node update, tak)
@@ -234,7 +290,7 @@ pub fn run(){
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         // connection na fronted, vytvoření tabulky, kde název v reactu ("list_nodes") == rust funkce (list_notes())
-        .invoke_handler(tauri::generate_handler![list_notes, read_note, insert_note, delete_note, new_note])
+        .invoke_handler(tauri::generate_handler![list_notes, update_note, delete_note, insert_note, new_note])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

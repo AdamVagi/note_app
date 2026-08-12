@@ -10,17 +10,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     SidebarMovement();
     ButtonsNavigation();
-    // NavigateTo(viewId); -> nemůže bc tu funkci nepotřebujeme (volá se z jiné funkce)
     NodeOverlay();
     AutoOverlayAdjustment();
+
+    // loading nodes immediately after app launch
+    loadAndRenderNotes();
 });
 
 
 /* ============================================================
    VĚCI, KTERÉ Z UI MUSÍM PROSTĚ PŘEPSAT DO JS (nejde jinak)
    ============================================================ */
-
-// TODO: toto ještě jednou projít pro osvěžení a lepší pochopení (protože je 23:41)
 
 // sidebar movement
 function SidebarMovement() {
@@ -62,19 +62,23 @@ function NavigateTo(viewId) {  // -> argument, který máme v HTML (data-target)
   // najde všechny elementy, který mají vlastnost = app-view (js je schopnej přepnout stránku podle ID)
   const allselectors = document.querySelectorAll('.app-view');
 
-  // Schovej všechny stránky
+  // schování všech stránek napřed
   for (const view of allselectors)
   {
       view.classList.remove("active");
   }
 
-  // Najdi stránku, kterou chceme zobrazit
+  // pak zobrazení jenom té, kterou chci já
   const targetView = document.getElementById(viewId);
 
-  // Pokud existuje, zobraz ji
   if (targetView)
   {
       targetView.classList.add("active");
+  }
+
+  // refresh uložených nodes
+  if (viewId === "view-journal") {
+    loadAndRenderNotes();
   }
 }
 
@@ -100,23 +104,33 @@ function NodeOverlay() {
   const node_add = document.querySelector(".add-node-btn");
 
   node_add.addEventListener("click", async function () {
-
-    // first je potřeba vytvořit prázdnou poznámku (máme filename + date dovnitř nody)
+    
+    // vrátí se nám jenom filename + si vytáhneme data z elementu ()
     const newNoteData = await invoke("new_note");
     const content = document.getElementById("node-content").value;
 
-    // TODO: + tady na konci bude potřeba udělat bool check  
+    // zapíšeme content z UI (return je bool)
     const odpoved = await invoke("insert_note", {
-        filename: newNoteData.filename,
+        filename: newNoteData,
         content: content
     });
 
-    // lze zavřít overlay a zaktualizovat UI
-    if(odpoved) {
-      document.getElementById("node-overlay").classList.add("hidden");
-      document.getElementById("node-content").value = ""; // vyčistí textové pole
-      loadAndRenderNotes(); // Obnoví seznam na obrazovce
+    // TODO: ten error handling bude potřeba vyřešit (idk zatím)
+    if (!odpoved) {
+      showErrorNotification("Uložení poznámky selhalo! Zkontrolujte souborový systém.");
     }
+
+    // zavřít overlay a zaktualizovat UI 
+    const textarea = document.getElementById("node-content");
+    textarea.value = "";
+    overlay.classList.add("hidden");
+
+    // TODO: toto je zatím optional, protože nemám otestovaný, jak se to bude chovat když textarea bude rozšířená na > default
+    // textarea.style.height = "auto";
+
+    // update main page with notes
+    loadAndRenderNotes();
+    
   });
 }
 
@@ -135,27 +149,43 @@ function AutoOverlayAdjustment() {
   });
 }
 
-// funkce, která se zavolá při startu aplikace
+// funkce na renderování všech dostupných poznámek na main page 
 async function loadAndRenderNotes() {
-  const notes = await invoke("list_notes"); 
-  
-  // Vykreslujeme to do view-journal
-  const container = document.getElementById("view-journal");
-  container.innerHTML = ""; // Vyčištění starých dat
 
+  const notes = await invoke("list_notes"); 
+
+  // kontejner na main page + clean up
+  const container = document.getElementById("view-journal");
+  if (!container) return;
+
+  container.innerHTML = ""; 
+  
+  // empty stav (první spuštění aplikace) -> custom stav
+  if (notes.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">📝</div>
+        <h2>Zatím tu nic není</h2>
+        <p>Klikni na <strong>+ New Journal</strong> v levém menu a napiš svoji první poznámku!</p>
+      </div>
+    `;
+    return;
+  }
+  
+  // vykreslení každé uložené poznámky
   notes.forEach((note) => {
-    // Vytvoříme obal poznámky
+
     const article = document.createElement("article");
     article.className = "entry";
-    article.dataset.filename = note.filename;
+    // article.dataset.filename = note.filename;
 
-    // Sestavíme HTML strukturu uvnitř
+    // HTML struktura
     article.innerHTML = `
       <div class="entry-header">
         <div class="date">${note.date}</div>
         <div class="entry-actions">
-          <button class="btn-action btn-fav ${note.favorite ? 'active' : ''}">${note.favorite ? '★' : '☆'}</button>
-          <button class="btn-action btn-edit">✏️</button>
+          <button class="btn-fav ${note.favorite ? 'active' : ''}">${note.favorite ? '★' : '☆'}</button>
+          <button class="btn-edit">✏️</button>
         </div>
       </div>
       <div class="content">
@@ -163,23 +193,30 @@ async function loadAndRenderNotes() {
       </div>
     `;
 
-    // 1. Záchyt události pro hvězdičku
+    // LOGIC for favorite + edit
+    //-------------------------------------
+
+    // TODO: buď jsem divnej a nebo nefunguje animace hvězdičky ??
+    // TODO: rozbil jsem allignment SPA (settings se zobrazují zároveň s main page)
+
     const favBtn = article.querySelector('.btn-fav');
     favBtn.addEventListener('click', async () => {
-      // Změníme logickou hodnotu na opačnou
+      
       note.favorite = !note.favorite;
-      // Uložíme do Rustu
+      // update dat v souboru musí
       await invoke("update_note", { 
         filename: note.filename, 
         content: note.content, 
         favorite: note.favorite 
       });
-      // Překreslíme, aby se projevila změna
+      
+      // aby se to celé propsalo
       loadAndRenderNotes(); 
     });
 
-    // 2. Záchyt události pro tužku (Úprava textu)
-    const editBtn = article.querySelector('.btn-edit');
+
+    // TODO: úprava contentu ještě domyslet
+    /*const editBtn = article.querySelector('.btn-edit');
     const textElement = article.querySelector('.note-text');
 
     editBtn.addEventListener('click', async () => {
@@ -207,7 +244,7 @@ async function loadAndRenderNotes() {
           favorite: note.favorite 
         });
       }
-    });
+    });*/
 
     // Přidáme na stránku
     container.appendChild(article);

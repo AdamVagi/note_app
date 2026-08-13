@@ -76,236 +76,234 @@
          všechno se zobrazuje na jedné stránce, takže zbytek přijde do této sekce (main-content)-->
  
     <main class="main-content">
-      <div class="settings-container">
-                                  <!-- 2 třídy pro lepší práci v css-->
-        <section id="view-settings" class="app-view settings-card">
+                                <!-- 2 třídy pro lepší práci v css-->
+      <section id="view-settings" class="app-view settings-card">
 
-          <div class="settings-header">
-            <h2>Settings</h2>
-            <button class="close-btn" id="close-settings" title="Close" data-target="view-journal">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
-            </button>
-          </div> 
+        <div class="settings-header">
+          <h2>Settings</h2>
+          <button class="close-btn" id="close-settings" title="Close" data-target="view-journal">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div> 
 
-          <div class="settings-content">
+        <div class="settings-content">
 
-            <div class="settings-group">
-              <div class="setting-item">
-                <div class="setting-info">
-                  <label for="theme-toggle">Colour Theme:</label>
-                  <span class="setting-desc">Switch between light and dark theme</span>
-                </div>
-                <label class="switch">
-                  <input type="checkbox" id="theme-toggle" unchecked>
-                  <span class="slider"></span>
-                </label>
+          <div class="settings-group">
+            <div class="setting-item">
+              <div class="setting-info">
+                <label for="theme-toggle">Colour Theme:</label>
+                <span class="setting-desc">Switch between light and dark theme</span>
               </div>
+              <label class="switch">
+                <input type="checkbox" id="theme-toggle" unchecked>
+                <span class="slider"></span>
+              </label>
+            </div>
 
-              <div class="setting-item">
-                <div class="setting-info">
-                  <label for="font-size">Font Size:</label>
-                  <span class="setting-desc">Adjust the text size</span>
-                </div>
-                <div class="range-wrapper">
-                  <span style="font-size: 0.85rem;">A</span>
-                  <input type="range" id="font-size" min="12" max="22" value="16" step="1">
-                  <span style="font-size: 1.25rem;">A</span>
-                </div>
+            <div class="setting-item">
+              <div class="setting-info">
+                <label for="font-size">Font Size:</label>
+                <span class="setting-desc">Adjust the text size</span>
               </div>
-
-              <div class="setting-item">
-                <div class="setting-info">
-                  <label for="font-family">Typography:</label>
-                  <span class="setting-desc">Choose your preferred font style</span>
-                </div>
-                <select id="font-family" class="custom-select">
-                  <option value="system-ui" selected>System Default</option>
-                  <option value="sans-serif">Sans-Serif (Modern)</option>
-                  <option value="serif">Serif (Classic)</option>
-                  <option value="monospace">Monospace (Code)</option>
-                </select>
+              <div class="range-wrapper">
+                <span style="font-size: 0.85rem;">A</span>
+                <input type="range" id="font-size" min="12" max="22" value="16" step="1">
+                <span style="font-size: 1.25rem;">A</span>
               </div>
             </div>
 
-            <div class="settings-group">
-              <h3>Data & Reset</h3>
-              <div class="setting-item">
-                <div class="setting-info">
-                  <label>Reset Settings:</label>
-                  <span class="setting-desc">Restore default UI preferences</span>
-                </div>
-                <button class="btn-danger-outline">Reset to Default</button>
+            <div class="setting-item">
+              <div class="setting-info">
+                <label for="font-family">Typography:</label>
+                <span class="setting-desc">Choose your preferred font style</span>
               </div>
+              <select id="font-family" class="custom-select">
+                <option value="system-ui" selected>System Default</option>
+                <option value="sans-serif">Sans-Serif (Modern)</option>
+                <option value="serif">Serif (Classic)</option>
+                <option value="monospace">Monospace (Code)</option>
+              </select>
             </div>
           </div>
-        </section>
-              
-        <!-- ideas for SETTINGS:
-            - změna layoutu poznámek na main page - to ještě hodně promyslet (live change)
-            - Export / Import nastavení: Uložení preferencí do .json souboru (zatím optional)
-            - Ukládání dat (Local Storage): Přepínač, zda se má stav aplikace ukládat lokálně v prohlížeči (tohle think it over over time)
-            - -->    
 
-        <section id="view-about" class="app-view settings-card">
-
-          <div class="about-header">
-            <h2>About App</h2>
-            <button class="close-btn" id="close-about" title="Close" data-target="view-journal">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
-            </button>
+          <div class="settings-group">
+            <h3>Data & Reset</h3>
+            <div class="setting-item">
+              <div class="setting-info">
+                <label>Reset Settings:</label>
+                <span class="setting-desc">Restore default UI preferences</span>
+              </div>
+              <button class="btn-danger-outline">Reset to Default</button>
+            </div>
           </div>
+        </div>
+      </section>
+            
+      <!-- ideas for SETTINGS:
+          - změna layoutu poznámek na main page - to ještě hodně promyslet (live change)
+          - Export / Import nastavení: Uložení preferencí do .json souboru (zatím optional)
+          - Ukládání dat (Local Storage): Přepínač, zda se má stav aplikace ukládat lokálně v prohlížeči (tohle think it over over time)
+          - -->    
 
-          <div class="about-content">
+      <section id="view-about" class="app-view settings-card">
 
-            <div class="about-group">
-              <h3>Application Details</h3>
+        <div class="about-header">
+          <h2>About App</h2>
+          <button class="close-btn" id="close-about" title="Close" data-target="view-journal">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
 
-              <div class="about-item">
-                <div class="about-info">
-                  <label>Version:</label>
-                  <div class="status-badge">
-                    <span class="status-dot"></span>
-                    <span>IN PROGRESS (1.0.0)</span>
-                  </div>
-                </div>
-              </div>
+        <div class="about-content">
 
-              <div class="about-item">
-                <div class="about-info">
-                  <label>Technology:</label>
-                  <span class="setting-desc">Built with Tauri, Rust & JS</span>
-                </div>
-              </div>
+          <div class="about-group">
+            <h3>Application Details</h3>
 
-              <div class="about-item">
-                <div class="about-info">
-                  <label>License:</label>
-                  <span class="setting-desc">MIT License — Personal & Non-commercial</span>
+            <div class="about-item">
+              <div class="about-info">
+                <label>Version:</label>
+                <div class="status-badge">
+                  <span class="status-dot"></span>
+                  <span>IN PROGRESS (1.0.0)</span>
                 </div>
               </div>
             </div>
 
-            <div class="about-group">
-              <h3>Links & Resources</h3>
-
-              <div class="about-item">
-                <div class="about-info">
-                  <label>Source Code:</label>
-                  <span class="about-desc">View repository on GitHub</span>
-                </div>
-                <a href="https://github.com/AdamVagi/note_app" target="_blank" rel="noopener" class="btn-link">
-                  GitHub
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                    <polyline points="15 3 21 3 21 9"></polyline>
-                    <line x1="10" y1="14" x2="21" y2="3"></line>
-                  </svg>
-                </a>
-              </div>
-
-              <div class="about-item">
-                <div class="about-info">
-                  <label>What's new in latest version:</label>
-                  <div class="status-badge">
-                    <span class="status-dot"></span>
-                    <span>BUILD IN PROGRESS</span>
-                  </div>
-                </div>
+            <div class="about-item">
+              <div class="about-info">
+                <label>Technology:</label>
+                <span class="setting-desc">Built with Tauri, Rust & JS</span>
               </div>
             </div>
 
-            <div class="about-copyright">
-              <p>© 2026 Created with passion.</p>
-            </div>
-
-          </div>
-
-          <!-- ideas for About: 
-           - Číslo verze + změny, které byly vytvořeny v této verzi
-           - Kontrola aktualizací = tlačítko, které přes JS/Tauri prověří, zda není k dispozici novější verze
-           - Použitý Tech-Stack: Zobrazení malých štítků/tagů (Tauri, Rust, Vanilla JS, CSS3), což vypadá skvěle pro vývojáře i zvědavé uživatele
-           - Licence (MIT License / Open Source) a odkaz na licenční ujednání
-           - odkaz na Github -->           
-        </section>
-
-        <section id="view-improvement" class="app-view">
-
-          <div class="feedback-header">
-            <h2>App feedback</h2>
-            <button class="close-btn" id="close-feedback" title="Close" data-target="view-journal">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
-            </button>
-          </div>
-          
-          <div class="feedback-content">
-            <div class="feedback-group">
-              <h3>PAYPAL DONO NA VÝVOJ APLIKACE (VOLUNTEER)</h3>
-
-              <div class="feedback-item">
-                <div class="feedback-info">
-                  <label>Odkaz:</label>
-                </div>
-              </div>
-
-              <h3>SEND ME YOUR SUGGESTIONS FOR APP UPDATE THROUGHT THIS: (form sended throught email to me)</h3>
-
-              <div class="feedback-item">
-                <div class="feedback-info">
-                  <label>Odkaz:</label>
-                </div>
+            <div class="about-item">
+              <div class="about-info">
+                <label>License:</label>
+                <span class="setting-desc">MIT License — Personal & Non-commercial</span>
               </div>
             </div>
           </div>
 
-          <!-- ideas for feedback: 
-           - tady to napojit na tu funkci, že mi to pošle email (claude chat) 
-           - no a ten voluteer paypal pro dono - Kávový / Donut button (PayPal/BuyMeACoffee): Samostatný stylový block/řádek pro podporu vývoje -->
-        </section>
+          <div class="about-group">
+            <h3>Links & Resources</h3>
 
-    <!-- =========================================
-        END OF SECTIONS, START OF GLOBAL OVERLAYS (zatím jenom jedno)
-        ========================================= -->
-
-        <div id="node-overlay" class="hidden">
-          <div class="overlay">
-            <div class="overlay-header">
-              <h2>NODE ADDING</h2>
-              <button class="close-new-node-btn" id="close-new-node" title="Close">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <line x1="18" y1="6" x2="6" y2="18"></line>
-                  <line x1="6" y1="6" x2="18" y2="18"></line>
+            <div class="about-item">
+              <div class="about-info">
+                <label>Source Code:</label>
+                <span class="about-desc">View repository on GitHub</span>
+              </div>
+              <a href="https://github.com/AdamVagi/note_app" target="_blank" rel="noopener" class="btn-link">
+                GitHub
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <line x1="10" y1="14" x2="21" y2="3"></line>
                 </svg>
-              </button>
+              </a>
             </div>
 
-            <div class="overlay-body">
-              <textarea id="node-content" placeholder="Insert your thoughts..." rows="6"></textarea>
+            <div class="about-item">
+              <div class="about-info">
+                <label>What's new in latest version:</label>
+                <div class="status-badge">
+                  <span class="status-dot"></span>
+                  <span>BUILD IN PROGRESS</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="about-copyright">
+            <p>© 2026 Created with passion.</p>
+          </div>
+
+        </div>
+
+        <!-- ideas for About: 
+          - Číslo verze + změny, které byly vytvořeny v této verzi
+          - Kontrola aktualizací = tlačítko, které přes JS/Tauri prověří, zda není k dispozici novější verze
+          - Použitý Tech-Stack: Zobrazení malých štítků/tagů (Tauri, Rust, Vanilla JS, CSS3), což vypadá skvěle pro vývojáře i zvědavé uživatele
+          - Licence (MIT License / Open Source) a odkaz na licenční ujednání
+          - odkaz na Github -->           
+      </section>
+
+      <section id="view-improvement" class="app-view settings-card">
+
+        <div class="feedback-header">
+          <h2>App feedback</h2>
+          <button class="close-btn" id="close-feedback" title="Close" data-target="view-journal">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        
+        <div class="feedback-content">
+          <div class="feedback-group">
+            <h3>PAYPAL DONO NA VÝVOJ APLIKACE (VOLUNTEER)</h3>
+
+            <div class="feedback-item">
+              <div class="feedback-info">
+                <label>Odkaz:</label>
+              </div>
             </div>
 
-            <div class="overlay-footer">
-              <button class="add-node-btn" id="add-node">Add node</button>
+            <h3>SEND ME YOUR SUGGESTIONS FOR APP UPDATE THROUGHT THIS: (form sended throught email to me)</h3>
+
+            <div class="feedback-item">
+              <div class="feedback-info">
+                <label>Odkaz:</label>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- =========================================
-          ALL NODES CONNECTED THROUGHT JS
-        ========================================= -->
-        <section id="view-journal" class="app-view active"></section>
+        <!-- ideas for feedback: 
+          - tady to napojit na tu funkci, že mi to pošle email (claude chat) 
+          - no a ten voluteer paypal pro dono - Kávový / Donut button (PayPal/BuyMeACoffee): Samostatný stylový block/řádek pro podporu vývoje -->
+      </section>
 
-        <!-- TODO: celkově to všechno sjednotit jazykově (jak kód tak co se zobrazuje do reálné aplikace, tak přepsat do AJ - teď zmatek) --> 
-        <!-- TODO: settings-container (nevím jestli jsem to špatně pojmenoval nebo co to je a proč to není uzavřený a proč mi to leze do main page --> 
-        <!-- TODO: takže to bude chtít kompletní refaktoring (UI) -> klidně to hodit claudovi ať si s tím pohraje --> 
+  <!-- =========================================
+      END OF SECTIONS, START OF GLOBAL OVERLAYS (zatím jenom jedno)
+      ========================================= -->
+
+      <div id="node-overlay" class="hidden">
+        <div class="overlay">
+          <div class="overlay-header">
+            <h2>NODE ADDING</h2>
+            <button class="close-new-node-btn" id="close-new-node" title="Close">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+
+          <div class="overlay-body">
+            <textarea id="node-content" placeholder="Insert your thoughts..." rows="6"></textarea>
+          </div>
+
+          <div class="overlay-footer">
+            <button class="add-node-btn" id="add-node">Add node</button>
+          </div>
+        </div>
       </div>
+
+      <!-- =========================================
+        ALL NODES CONNECTED THROUGHT JS
+      ========================================= -->
+      <section id="view-journal" class="app-view active"></section>
+
+      <!-- TODO: celkově to všechno sjednotit jazykově (jak kód tak co se zobrazuje do reálné aplikace, tak přepsat do AJ - teď zmatek) --> 
+      <!-- TODO: settings-container (nevím jestli jsem to špatně pojmenoval nebo co to je a proč to není uzavřený a proč mi to leze do main page --> 
+      <!-- TODO: takže to bude chtít kompletní refaktoring (UI) -> klidně to hodit claudovi ať si s tím pohraje --> 
     </main>    
   </body>
 </html>

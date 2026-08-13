@@ -5,6 +5,15 @@
     box-sizing: border-box;
 }
 
+:root {
+    --card-bg: #161616;
+    --card-border: #2a2a2a;
+    --text-main: #ffffff;
+    --text-muted: #888888;
+    --accent-color: #3b82f6;
+    --danger-color: #ef4444;
+}
+
 body {
     font-family: 'Rajdhani', sans-serif;
     background: #0a0a0a;
@@ -20,8 +29,7 @@ body {
    ============================================================ */
 
 .sidebar {
-    width: 220
-    px;
+    width: 220px;
     min-width: 64px;
     background: #111111;
     border-right: 1px solid #2a2a2a;
@@ -272,6 +280,7 @@ body {
 
 .app-view{
     display:none;
+    width: 100%;
 }
 
 .app-view.active{
@@ -282,19 +291,10 @@ body {
    SETTINGS LAYOUT
    ============================================================ */
 
-.settings-container {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  min-height: 100vh;
-  padding: 40px 16px;
-  background-color: var(--bg-primary);
-  box-sizing: border-box;
-}
-
 .settings-card {
   width: 100%;
   max-width: 680px; 
+  margin: auto;
   background: var(--card-bg);
   border: 1px solid var(--card-border);
   border-radius: 16px;
@@ -596,7 +596,6 @@ input:checked + .slider:before {
   line-height: 1.4;
 }
 
-/* Minimalistický Status Badge (program IN PROGRESS) */
 .status-badge {
   display: inline-flex;
   align-items: center;
@@ -617,11 +616,10 @@ input:checked + .slider:before {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background-color: #eab308; /* Decentní oranžovo-žlutá tečka */
+  background-color: #eab308; 
   box-shadow: 0 0 6px rgba(234, 179, 8, 0.4);
 }
 
-/* Odkazová tlačítka (GitHub, Changelog) */
 .btn-link {
   display: inline-flex;
   align-items: center;
@@ -642,7 +640,6 @@ input:checked + .slider:before {
   border-color: rgba(255, 255, 255, 0.2);
 }
 
-/* Patka v About */
 .about-copyright {
   text-align: center;
   margin-top: 32px;
@@ -833,8 +830,12 @@ input:checked + .slider:before {
   flex: 1;
   height: 100vh;
   overflow-y: auto;
+  position: relative;
   padding: 2rem 3rem;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .container {
@@ -854,6 +855,10 @@ input:checked + .slider:before {
 
 #view-journal {
   width: 100%;
+  max-width: 900px;
+}
+
+#view-journal.active {
   display: flex;
   flex-direction: column;
 }
@@ -885,7 +890,7 @@ input:checked + .slider:before {
 
 .date {
   color: #888888;
-  font-size: 1.0rem;
+  font-size: 1.1rem;
   font-weight: 600;
   letter-spacing: 0.15rem;
 }
@@ -921,7 +926,7 @@ input:checked + .slider:before {
 
 .content {
   color: #d0d0d0;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   font-weight: 400;
   line-height: 1.8;
 }

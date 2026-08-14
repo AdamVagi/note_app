@@ -29,6 +29,10 @@ fn notes_dir(app: &tauri::AppHandle) -> PathBuf{
     path.push("notes");
     // pokud neexistuje -> vytvoř, pokud existuje jako notes, tak nech tak jak je (ošetření prvotního insertu)
     fs::create_dir_all(&path).unwrap();
+
+    // custom print (path k .md filům)
+    println!(">>> CESTA K POZNÁMKÁM: {:?} <<<", path);
+    
     return path
 }
 
@@ -218,19 +222,6 @@ fn update_note(app: tauri::AppHandle, filename: String, content: String, favorit
     }
     return false;
 }
-
-//---------------------
-// TODO: i am leaving it here for future (zatím není využití vymyšlený ještě)
-/*#[tauri::command]
-// vrátí obsah položky = node (souboru)
-fn read_note(app: tauri::AppHandle, filename: String) -> String {
-
-    // vybereme path k tomu specifickýmu objektu
-    let path = notes_dir(&app).join(&filename);
-    // otevře soubor, přečte ho a vrátí Result<String, Error>
-    // unwrap_or_default - když se něco nepovede, tak nespadne, ale vrátí prázdnej string ("")
-    fs::read_to_string(path).unwrap_or_default()
-}*/
 
 // označení, že tato funkce se může volat v js
 #[tauri::command]

@@ -149,9 +149,10 @@ function AutoOverlayAdjustment() {
   });
 }
 
-// funkce na renderování všech dostupných poznámek na main page 
+// funkce na renderování poznámek na main 
 async function loadAndRenderNotes() {
 
+  // LOGIC for all nodes (main SPA)
   const notes = await invoke("list_notes"); 
 
   // kontejner na main page + clean up
@@ -161,7 +162,7 @@ async function loadAndRenderNotes() {
   container.innerHTML = ""; 
   
   // empty stav (první spuštění aplikace) -> custom stav
-  if (notes.length === 0) {
+  if (notes.length === 0){
     container.innerHTML = `
       <div class="empty-state">
         <div class="empty-icon">📝</div>
@@ -169,11 +170,12 @@ async function loadAndRenderNotes() {
         <p>Klikni na <strong>+ New Journal</strong> v levém menu a napiš svoji první poznámku!</p>
       </div>
     `;
+    renderFavoriteNotes(notes);
     return;
   }
   
   // vykreslení každé uložené poznámky
-  notes.forEach((note) => {
+  notes.forEach((note) =>{
 
     const article = document.createElement("article");
     article.className = "entry";
@@ -193,63 +195,117 @@ async function loadAndRenderNotes() {
       </div>
     `;
 
-    // LOGIC for favorite + edit
-    //-------------------------------------
-
-    // TODO: buď jsem divnej a nebo nefunguje animace hvězdičky ??
-    // TODO: rozbil jsem allignment SPA (settings se zobrazují zároveň s main page)
-
     const favBtn = article.querySelector('.btn-fav');
-    favBtn.addEventListener('click', async () => {
+    favBtn.addEventListener('click', async () =>{
       
       note.favorite = !note.favorite;
+
+      // animace hvězdičky, překliknutí hvězdičky
+      if (note.favorite) {
+        favBtn.classList.add('active');
+        favBtn.textContent = '★';
+      } else {
+        favBtn.classList.remove('active');
+        favBtn.textContent = '☆';
+      }
+
       // update dat v souboru musí
+      await invoke("update_note",{ 
+        filename: note.filename, 
+        content: note.content, 
+        favorite: note.favorite 
+      });
+
+      // napřed aktualizace dat a pak se sidebar překreslí s novými daty
+      const updatedNotes = await invoke("list_notes");
+      renderFavoriteNotes(updatedNotes);
+    });
+
+    // Přidáme na stránku
+    container.appendChild(article);
+  });
+
+  // TODO: buď jsem divnej a nebo nefunguje animace hvězdičky ??
+  // TODO: rozbil jsem allignment SPA (settings se zobrazují zároveň s main page)
+
+  // TODO: úprava contentu ještě domyslet
+  /*const editBtn = article.querySelector('.btn-edit');
+  const textElement = article.querySelector('.note-text');
+
+  editBtn.addEventListener('click', async () => {
+    const isEditing = textElement.isContentEditable;
+
+    if (!isEditing) {
+      // ZAPNOUT ÚPRAVY
+      textElement.contentEditable = "true";
+      textElement.focus();
+      editBtn.textContent = '💾'; // Ikona uložení
+      article.classList.add('is-editing');
+    } else {
+      // VYPNOUT A ULOŽIT
+      textElement.contentEditable = "false";
+      editBtn.textContent = '✏️';
+      article.classList.remove('is-editing');
+      
+      // Získáme nový text
+      note.content = textElement.innerText;
+
+      // Uložíme do Rustu
       await invoke("update_note", { 
         filename: note.filename, 
         content: note.content, 
         favorite: note.favorite 
       });
-      
-      // aby se to celé propsalo
-      loadAndRenderNotes(); 
-    });
+    }
+  });*/
+
+  // počáteční vykreslení sidebaru při načtení aplikace
+  renderFavoriteNotes(notes);
+}
 
 
-    // TODO: úprava contentu ještě domyslet
-    /*const editBtn = article.querySelector('.btn-edit');
-    const textElement = article.querySelector('.note-text');
+// LOGIC for favorite (on the side) -> separátní funkce, protože nechci tu funkcionalitu kombinovat až moc
+function renderFavoriteNotes(allNotes) {
+  
+  const kontajnerus = document.getElementById("note-list");
+  if (!kontajnerus) return;
 
-    editBtn.addEventListener('click', async () => {
-      const isEditing = textElement.isContentEditable;
+  kontajnerus.innerHTML = ""; 
 
-      if (!isEditing) {
-        // ZAPNOUT ÚPRAVY
-        textElement.contentEditable = "true";
-        textElement.focus();
-        editBtn.textContent = '💾'; // Ikona uložení
-        article.classList.add('is-editing');
-      } else {
-        // VYPNOUT A ULOŽIT
-        textElement.contentEditable = "false";
-        editBtn.textContent = '✏️';
-        article.classList.remove('is-editing');
-        
-        // Získáme nový text
-        note.content = textElement.innerText;
+  // filtrace
+  const favoriteNotes = allNotes.filter(note => note.favorite === true);
 
-        // Uložíme do Rustu
-        await invoke("update_note", { 
-          filename: note.filename, 
-          content: note.content, 
-          favorite: note.favorite 
-        });
-      }
-    });*/
+  // empty seznam
+  if (favoriteNotes.length === 0) {
+    kontajnerus.innerHTML = `
+      <div class="note-item empty">
+        <div class="note-item-preview" style="color: #b5b1b1; font-style: italic;">Žádné oblíbené poznámky...</div>
+      </div>
+    `;
+    return;
+  }
 
-    // Přidáme na stránku
-    container.appendChild(article);
+  // func pozn: allignment bude fungovat, protože tady nám to uřízne v css díky je overflow: hidden a text-overflow: ellipsis
+
+  // TODO: taky udělat, že se na ní dá kliknout (akorát nevím jestli přímo otevřít obsah a nebo udělat forwarding na místo, kde se zobrazuje původně)
+
+  favoriteNotes.forEach((note) =>{
+
+    const div = document.createElement("div");
+    div.className = "note-item"; 
+    
+    div.innerHTML = `
+      <div class="note-item-preview">${note.content || "<i>Prázdná poznámka...</i>"}</div>
+    `;
+
+    // TODO do budoucna: Tady lze přidat div.addEventListener('click', ...), 
+    // který zavolá novou funkci, například pro zascrollování k poznámce v main view 
+    // nebo její otevření v detailu -> to stejný v té funkci, která tuhle funkci volá
+
+    kontajnerus.appendChild(div);
   });
 }
+
 
 /* ============================================================
    ZÁKLADNÍ KOSTRA, KTEROU CHCI POUŽÍT JAKO JENOM API PRO CONNECTION HTML -> RUST

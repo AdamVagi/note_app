@@ -700,7 +700,8 @@ input:checked + .slider:before {
    NODE ADDING
    ============================================================ */
 
-#node-overlay {
+#node-overlay,
+#detail-content-overlay {
     position: fixed;
     inset: 0;
     display: flex;
@@ -710,7 +711,8 @@ input:checked + .slider:before {
     z-index: 9999;
 }
 
-#node-overlay.hidden {
+#node-overlay.hidden,
+#detail-content-overlay.hidden {
     display: none;
 }
 
@@ -747,7 +749,8 @@ input:checked + .slider:before {
     display: none;
 }
 
-.close-new-node-btn {
+.close-new-node-btn,
+.close-detail-node-btn {
   position: absolute;
   right: 0;
   background: transparent;
@@ -762,7 +765,8 @@ input:checked + .slider:before {
   transition: all 0.2s ease;
 }
 
-.close-new-node-btn:hover {
+.close-new-node-btn:hover,
+.close-detail-node-btn:hover {
   background: rgba(255, 255, 255, 0.08);
   color: #ffffff;
   transform: scale(1.05);
@@ -773,7 +777,8 @@ input:checked + .slider:before {
   flex-direction: column;
 }
 
-#node-content {
+#node-content,
+#edit-node-content {
   width: 100%;
   background: #2a2a2a; 
   border: 1px solid #3a3a3a;
@@ -791,12 +796,14 @@ input:checked + .slider:before {
   transition: border-color 0.2s;
 }
 
-#node-content:focus {
+#node-content:focus,
+#edit-node-content:focus {
   outline: none;
   border-color: #3b82f6;
 }
 
-#node-content::placeholder {
+#node-content::placeholder,
+#edit-node-content::placeholder {
   color: #a0a0a0;
 }
 
@@ -805,7 +812,8 @@ input:checked + .slider:before {
   justify-content: flex-end; 
 }
 
-.add-node-btn {
+.add-node-btn,
+.save-node-btn {
   width: 100%; 
   background: #3b82f6; 
   color: #fff;
@@ -818,7 +826,8 @@ input:checked + .slider:before {
   transition: background-color 0.2s ease;
 }
 
-.add-node-btn:hover {
+.add-node-btn:hover,
+.save-node-btn:hover {
   background: #2563eb; 
 }
 
@@ -905,7 +914,7 @@ input:checked + .slider:before {
     background: transparent;
     border: none;
     color: #888;
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     cursor: pointer;
     transition: transform 0.2s, color 0.2s;
 }

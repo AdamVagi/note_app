@@ -12,10 +12,20 @@ document.addEventListener("DOMContentLoaded", () => {
     ButtonsNavigation();
     NodeOverlay();
     AutoOverlayAdjustment();
+    EditOverlay();
+
 
     // loading nodes immediately after app launch
-    loadAndRenderNotes();
+    LoadAndRenderNotes();
 });
+
+
+/* ============================================================
+   GLOBÁLNÍ PROMĚNNÉ PRO OZNAČENÍ KTEROU NODU PRÁVĚ OPRAVUJU
+   ============================================================ */
+
+let currentEditingFilename = "";
+let currentEditingFavorite = false;
 
 
 /* ============================================================
@@ -78,7 +88,7 @@ function NavigateTo(viewId) {  // -> argument, který máme v HTML (data-target)
 
   // refresh uložených nodes
   if (viewId === "view-journal") {
-    loadAndRenderNotes();
+    LoadAndRenderNotes();
   }
 }
 
@@ -129,7 +139,7 @@ function NodeOverlay() {
     // textarea.style.height = "auto";
 
     // update main page with notes
-    loadAndRenderNotes();
+    LoadAndRenderNotes();
     
   });
 }
@@ -150,7 +160,7 @@ function AutoOverlayAdjustment() {
 }
 
 // funkce na renderování poznámek na main 
-async function loadAndRenderNotes() {
+async function LoadAndRenderNotes() {
 
   // LOGIC for all nodes (main SPA)
   const notes = await invoke("list_notes"); 
@@ -170,7 +180,7 @@ async function loadAndRenderNotes() {
         <p>Klikni na <strong>+ New Journal</strong> v levém menu a napiš svoji první poznámku!</p>
       </div>
     `;
-    renderFavoriteNotes(notes);
+    RenderFavoriteNotes(notes);
     return;
   }
   
@@ -218,54 +228,37 @@ async function loadAndRenderNotes() {
 
       // napřed aktualizace dat a pak se sidebar překreslí s novými daty
       const updatedNotes = await invoke("list_notes");
-      renderFavoriteNotes(updatedNotes);
+      RenderFavoriteNotes(updatedNotes);
     });
 
-    // Přidáme na stránku
+    // přidáme na stránku
+    container.appendChild(article);
+
+    // node editing part
+    const editBtn = article.querySelector('.btn-edit');
+    
+    editBtn.addEventListener("click", () => {
+
+      // uložení aktuální poznámky do global variables
+      currentEditingFilename = note.filename;
+      currentEditingFavorite = note.favorite;
+
+      // Otevřeme overlay a vložíme do textarey text této poznámky
+      document.getElementById("edit-node-content").value = note.content;
+      document.getElementById("detail-content-overlay").classList.remove("hidden");
+    });
+
+    // přidáme na stránku
     container.appendChild(article);
   });
 
-  // TODO: buď jsem divnej a nebo nefunguje animace hvězdičky ??
-  // TODO: rozbil jsem allignment SPA (settings se zobrazují zároveň s main page)
-
-  // TODO: úprava contentu ještě domyslet
-  /*const editBtn = article.querySelector('.btn-edit');
-  const textElement = article.querySelector('.note-text');
-
-  editBtn.addEventListener('click', async () => {
-    const isEditing = textElement.isContentEditable;
-
-    if (!isEditing) {
-      // ZAPNOUT ÚPRAVY
-      textElement.contentEditable = "true";
-      textElement.focus();
-      editBtn.textContent = '💾'; // Ikona uložení
-      article.classList.add('is-editing');
-    } else {
-      // VYPNOUT A ULOŽIT
-      textElement.contentEditable = "false";
-      editBtn.textContent = '✏️';
-      article.classList.remove('is-editing');
-      
-      // Získáme nový text
-      note.content = textElement.innerText;
-
-      // Uložíme do Rustu
-      await invoke("update_note", { 
-        filename: note.filename, 
-        content: note.content, 
-        favorite: note.favorite 
-      });
-    }
-  });*/
-
   // počáteční vykreslení sidebaru při načtení aplikace
-  renderFavoriteNotes(notes);
+  RenderFavoriteNotes(notes);
 }
 
 
 // LOGIC for favorite (on the side) -> separátní funkce, protože nechci tu funkcionalitu kombinovat až moc
-function renderFavoriteNotes(allNotes) {
+function RenderFavoriteNotes(allNotes) {
   
   const kontajnerus = document.getElementById("note-list");
   if (!kontajnerus) return;
@@ -287,8 +280,6 @@ function renderFavoriteNotes(allNotes) {
 
   // func pozn: allignment bude fungovat, protože tady nám to uřízne v css díky je overflow: hidden a text-overflow: ellipsis
 
-  // TODO: taky udělat, že se na ní dá kliknout (akorát nevím jestli přímo otevřít obsah a nebo udělat forwarding na místo, kde se zobrazuje původně)
-
   favoriteNotes.forEach((note) =>{
 
     const div = document.createElement("div");
@@ -298,14 +289,54 @@ function renderFavoriteNotes(allNotes) {
       <div class="note-item-preview">${note.content || "<i>Prázdná poznámka...</i>"}</div>
     `;
 
-    // TODO do budoucna: Tady lze přidat div.addEventListener('click', ...), 
-    // který zavolá novou funkci, například pro zascrollování k poznámce v main view 
-    // nebo její otevření v detailu -> to stejný v té funkci, která tuhle funkci volá
-
     kontajnerus.appendChild(div);
   });
 }
 
+// TODO: když bude moc textu v normální poznámce na main page (tak zkrátit) ->nvm ještě
+// TODO: kliknutí na poznámku (favorite) -> forwarding na místo na main page, kde se nachází konkrétní node
+
+// func. segment = původně jsem volal tuto funkci z foreach cyklu a addEventListener (přidání posluchače události) jsem dal ke každé poznámce (ale takhle by vznikl deadlock -> zárva)
+//                 takže jeden overlay, jeden exit a save tlačítko se volá pokaždé jen jednou
+//                 nebudeme si komplikovat život, prostě přes klikání na edit tlačítko se bude otevírat a hotovo, nic víc    
+
+
+// another overlay for closer look (edit) at specific node 
+function EditOverlay(){
+
+  const overlay = document.getElementById("detail-content-overlay");
+  const closeBtn = document.getElementById("close-detail-node");
+  const saveBtn = document.getElementById("save-node");
+
+  closeBtn.addEventListener("click", () => {
+      overlay.classList.add("hidden");
+  });
+
+  saveBtn.addEventListener("click", async () => {
+    
+    const kontetos = document.getElementById("edit-node-content").value;
+
+  // different error handling attempt
+    try {
+        await invoke("update_note", { 
+            filename: currentEditingFilename, 
+            content: kontetos, 
+            favorite: currentEditingFavorite 
+        });
+
+        document.getElementById("edit-node-content").value = "";
+        // overlay.classList.add("hidden");
+        LoadAndRenderNotes();
+        
+    } catch (error) {
+        console.error("Chyba při ukládání:", error);
+    }
+  });
+}
+
+// TODO: interpret na markdown (+ preview okno vedle editu, budou tam 2)
+// TODO: jakmile dojde k update, tak se musí overlay zavřít (teď zůstal otevřen)
+// TODO: dodělat delete poznámky z main page (klidně normální ikonu)
 
 /* ============================================================
    ZÁKLADNÍ KOSTRA, KTEROU CHCI POUŽÍT JAKO JENOM API PRO CONNECTION HTML -> RUST

@@ -270,10 +270,10 @@
           - no a ten voluteer paypal pro dono - Kávový / Donut button (PayPal/BuyMeACoffee): Samostatný stylový block/řádek pro podporu vývoje -->
       </section>
 
-  <!-- =========================================
-      END OF SECTIONS, START OF GLOBAL OVERLAYS (zatím jenom jedno)
-      ========================================= -->
 
+      <!-- =========================================
+          END OF SECTIONS, START OF GLOBAL OVERLAYS 
+          ========================================= -->
       <div id="node-overlay" class="hidden">
         <div class="overlay">
           <div class="overlay-header">
@@ -296,10 +296,38 @@
         </div>
       </div>
 
+
       <!-- =========================================
-        ALL NODES CONNECTED THROUGHT JS
-      ========================================= -->
+          CLOSER LOOK AT THE NODE (overlay) -> EDIT
+          ========================================= -->
+      <div id="detail-content-overlay" class="hidden">
+        <div class="overlay">          
+          <div class="overlay-header">
+            <!-- u této class i think můžeme nechat same name a ono se to jenom napojí na fukční css -->
+            <button class="close-detail-node-btn" id="close-detail-node" title="Close">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+
+          <div class="overlay-body">
+            <textarea id="edit-node-content" placeholder="${note.content || "<i>Prázdná poznámka...</i>"}" rows="6"></textarea>
+          </div>
+
+          <div class="overlay-footer">
+            <button class="save-node-btn" id="save-node">Save note</button>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- =========================================
+          ALL NODES CONNECTED THROUGHT JS
+         ========================================= -->
       <section id="view-journal" class="app-view active"></section>
+ 
 
       <!-- TODO: celkově to všechno sjednotit jazykově (jak kód tak co se zobrazuje do reálné aplikace, tak přepsat do AJ - teď zmatek) --> 
       <!-- TODO: settings-container (nevím jestli jsem to špatně pojmenoval nebo co to je a proč to není uzavřený a proč mi to leze do main page --> 

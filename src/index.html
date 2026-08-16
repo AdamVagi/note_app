@@ -324,6 +324,24 @@
 
 
       <!-- =========================================
+          NODE DELETE
+          ========================================= -->
+      <div id="delete-content-overlay" class="hidden">
+        <div class="overlay">          
+          <div class="overlay-body">
+            <p>Do you really wanna delete this node forever ?</p>
+          </div>
+
+          <!-- TODO: connection na css -->
+          <div class="overlay-footer">
+            <button class="yes-btn" id="yes-btn-node">YES</button>
+            <button class="no-btn" id="no-btn-node">NO</button>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- =========================================
           ALL NODES CONNECTED THROUGHT JS
          ========================================= -->
       <section id="view-journal" class="app-view active"></section>
@@ -331,7 +349,7 @@
 
       <!-- TODO: celkově to všechno sjednotit jazykově (jak kód tak co se zobrazuje do reálné aplikace, tak přepsat do AJ - teď zmatek) --> 
       <!-- TODO: settings-container (nevím jestli jsem to špatně pojmenoval nebo co to je a proč to není uzavřený a proč mi to leze do main page --> 
-      <!-- TODO: takže to bude chtít kompletní refaktoring (UI) -> klidně to hodit claudovi ať si s tím pohraje --> 
+      <!-- TODO: takže to bude chtít kompletní refaktoring (UI) -> klidně to hodit claudovi ať si s tím pohraje + do toho stejnýho promptu hodit claudovi něco takovýho = zhodnoť moji aplikaci jako kritik, ale takovým způsobem aby mi to pomohlo dostat tu aplikaci k co nejvíce lidem a aby fungovalu ku prospěchu co nejvíce lidí (+ cesty propagace)--> 
     </main>    
   </body>
 </html>

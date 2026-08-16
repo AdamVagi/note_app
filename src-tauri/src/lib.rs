@@ -206,7 +206,7 @@ fn delete_note(app: tauri::AppHandle, filename: String) -> bool{
 
 // update metadat + případně i contentu
 #[tauri::command]
-// TODO: update contentu ještě nevím jak udělat (zatím nefunguje)
+// TODO: update contentu se dá jednoduše napojit na tuto funkci a ani není potřeba nic měnit
 fn update_note(app: tauri::AppHandle, filename: String, content: String, favorite: bool) -> bool {
 
     let path = notes_dir(&app).join(&filename);
@@ -272,7 +272,7 @@ fn list_notes(app: tauri::AppHandle) -> Vec<NoteData> {
 }
 
 // TODO: dodělat něco jako update nebo write (až budu dělat node update, tak)
-// TODO: revision + add == getNote(), saveNote(), loadNote()
+// TODO: revision + add == getNote(), loadNote()
 
 //jakože main
 #[cfg_attr(mobile, tauri::mobile_entry_point)]

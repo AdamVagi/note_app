@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
     NodeOverlay();
     AutoOverlayAdjustment();
     EditOverlay();
+    DeleteOverlay();
 
 
     // loading nodes immediately after app launch
@@ -25,6 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
    ============================================================ */
 
 let currentEditingFilename = "";
+let currentDeletingFilename = "";
 let currentEditingFavorite = false;
 
 
@@ -144,6 +146,7 @@ function NodeOverlay() {
   });
 }
 
+// TODO: přidat tady tuto funkcionalitu i do všech dalších overlayů
 // function for allignment adjustment during node inserting (automatic)
 function AutoOverlayAdjustment() {
 
@@ -197,7 +200,8 @@ async function LoadAndRenderNotes() {
         <div class="date">${note.date}</div>
         <div class="entry-actions">
           <button class="btn-fav ${note.favorite ? 'active' : ''}">${note.favorite ? '★' : '☆'}</button>
-          <button class="btn-edit">✏️</button>
+          <button class="btn-edit" title="Edit node">✏️</button>
+          <button class="btn-delete" title="Delete node">🗑️</button>
         </div>
       </div>
       <div class="content">
@@ -236,16 +240,30 @@ async function LoadAndRenderNotes() {
 
     // node editing part
     const editBtn = article.querySelector('.btn-edit');
-    
-    editBtn.addEventListener("click", () => {
+      
+    editBtn.addEventListener("click", function () {
 
       // uložení aktuální poznámky do global variables
       currentEditingFilename = note.filename;
       currentEditingFavorite = note.favorite;
 
-      // Otevřeme overlay a vložíme do textarey text této poznámky
+      // otevřeme overlay a vložíme do textarey text této poznámky
       document.getElementById("edit-node-content").value = note.content;
       document.getElementById("detail-content-overlay").classList.remove("hidden");
+    });
+
+    // přidáme na stránku
+    container.appendChild(article);
+
+    // node editing part
+    const deleteBtn = article.querySelector('.btn-delete');
+      
+    deleteBtn.addEventListener("click", function () {
+
+      currentDeletingFilename = note.filename;
+
+      // overlay open 
+      document.getElementById("delete-content-overlay").classList.remove("hidden");
     });
 
     // přidáme na stránku
@@ -308,7 +326,7 @@ function EditOverlay(){
   const closeBtn = document.getElementById("close-detail-node");
   const saveBtn = document.getElementById("save-node");
 
-  closeBtn.addEventListener("click", () => {
+  closeBtn.addEventListener("click", function () {
       overlay.classList.add("hidden");
   });
 
@@ -316,7 +334,7 @@ function EditOverlay(){
     
     const kontetos = document.getElementById("edit-node-content").value;
 
-  // different error handling attempt
+    // different error handling attempt
     try {
         await invoke("update_note", { 
             filename: currentEditingFilename, 
@@ -331,6 +349,45 @@ function EditOverlay(){
     } catch (error) {
         console.error("Chyba při ukládání:", error);
     }
+
+    // zavření
+    overlay.classList.add("hidden");
+  
+  });
+}
+
+// node deletion
+function DeleteOverlay() {
+
+  const overlay = document.getElementById("delete-content-overlay");
+  const yesBtn = document.getElementById("yes-btn-node");
+  const noBtn = document.getElementById("no-btn-node");
+
+  noBtn.addEventListener("click", function () {
+      overlay.classList.add("hidden");
+  });
+
+  yesBtn.addEventListener("click", function () {
+
+    // different error handling attempt
+    try {
+
+      const isDeleted = await invoke("delete_note", { 
+        filename: currentDeletingFilename 
+      });
+
+      if (isDeleted) {
+        
+        overlay.classList.add("hidden");
+        LoadAndRenderNotes();
+      } 
+      else {
+        console.error("Nepodařilo se smazat soubor.");
+      }
+    } catch (error) {
+      console.error("Chyba při mazání:", error);
+    }
+
   });
 }
 

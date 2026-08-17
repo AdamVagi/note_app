@@ -701,7 +701,8 @@ input:checked + .slider:before {
    ============================================================ */
 
 #node-overlay,
-#detail-content-overlay {
+#detail-content-overlay,
+#delete-content-overlay {
     position: fixed;
     inset: 0;
     display: flex;
@@ -712,7 +713,8 @@ input:checked + .slider:before {
 }
 
 #node-overlay.hidden,
-#detail-content-overlay.hidden {
+#detail-content-overlay.hidden,
+#delete-content-overlay.hidden {
     display: none;
 }
 
@@ -831,6 +833,67 @@ input:checked + .slider:before {
   background: #2563eb; 
 }
 
+/* =========================================
+   DELETE OVERLAY 
+   ========================================= */
+.overlay-footer {
+  display: flex;
+  gap: 16px;
+  justify-content: center; 
+  margin-top: 10px;
+}
+
+.yes-btn {
+  flex: 1;
+  background: var(--danger-color, #ef4444); 
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.05rem;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.yes-btn:hover {
+  background: #dc2626; 
+  transform: translateY(-2px); 
+}
+
+.no-btn {
+  flex: 1;
+  background: #2a2a2a; 
+  color: #d0d0d0;
+  border: 1px solid #3a3a3a;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.05rem;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s ease;
+}
+
+.no-btn:hover {
+  background: #3a3a3a;
+  color: #ffffff;
+  border-color: #4a4a4a;
+  transform: translateY(-2px);
+}
+
+/* =========================================
+   TEXT V MAZACÍM OKNĚ (Volitelné oživení)
+   ========================================= */
+#delete-content-overlay .overlay-body {
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #e2e2e2;
+  margin-bottom: 10px;
+}
+
 /* ============================================================
    MAIN CONTENT — Hlavní blok s poznámkami
    ============================================================ */
@@ -910,7 +973,8 @@ input:checked + .slider:before {
 }
 
 .btn-fav, 
-.btn-edit {
+.btn-edit,
+.btn-delete {
     background: transparent;
     border: none;
     color: #888;
@@ -920,13 +984,15 @@ input:checked + .slider:before {
 }
 
 .btn-fav:hover, 
-.btn-edit:hover {
+.btn-edit:hover,
+.btn-delete:hover {
     transform: scale(1.2);
     color: #fff;
 }
 
 .btn-fav.active {
   color: #eab308; 
+  transform: scale(1.35);
 }
 
 /* ============================================================

@@ -210,7 +210,7 @@ async function LoadAndRenderNotes() {
     `;
 
     const favBtn = article.querySelector('.btn-fav');
-    favBtn.addEventListener('click', async () =>{
+    favBtn.addEventListener('click', async function () {
       
       note.favorite = !note.favorite;
 
@@ -330,7 +330,7 @@ function EditOverlay(){
       overlay.classList.add("hidden");
   });
 
-  saveBtn.addEventListener("click", async () => {
+  saveBtn.addEventListener("click", async function () {
     
     const kontetos = document.getElementById("edit-node-content").value;
 
@@ -367,7 +367,7 @@ function DeleteOverlay() {
       overlay.classList.add("hidden");
   });
 
-  yesBtn.addEventListener("click", function () {
+  yesBtn.addEventListener("click", async function () {
 
     // different error handling attempt
     try {
@@ -392,8 +392,6 @@ function DeleteOverlay() {
 }
 
 // TODO: interpret na markdown (+ preview okno vedle editu, budou tam 2)
-// TODO: jakmile dojde k update, tak se musí overlay zavřít (teď zůstal otevřen)
-// TODO: dodělat delete poznámky z main page (klidně normální ikonu)
 
 /* ============================================================
    ZÁKLADNÍ KOSTRA, KTEROU CHCI POUŽÍT JAKO JENOM API PRO CONNECTION HTML -> RUST

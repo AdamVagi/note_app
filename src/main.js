@@ -1,30 +1,32 @@
 // invoke() -> propojení frontend JavaScript a backend Rust
 const { invoke } = window.__TAURI__.core;
 
-// TODO: tady toho chci mít co nejmíň, protože se zatím nechci učit js
 
 // ======================================================
 // INICIALIZACE APLIKACE (main)
 // ======================================================
 document.addEventListener("DOMContentLoaded", () => {
+  
+  LoadSavedSettings();
 
-    SidebarMovement();
-    ButtonsNavigation();
-    NodeOverlay();
-    AutoOverlayAdjustment();
-    EditOverlay();
-    DeleteOverlay();
-    SearchFunctionality()
+  SidebarMovement();
+  ButtonsNavigation();
+  NodeOverlay();
+  AutoOverlayAdjustment();
+  EditOverlay();
+  DeleteOverlay();
+  SearchFunctionality();
+  SettingsFunctionality();
 
 
-    // loading nodes immediately after app launch
-    LoadAndRenderNotes();
+  // loading nodes immediately after app launch
+  LoadAndRenderNotes();
 });
 
 
-/* ============================================================
-   GLOBÁLNÍ PROMĚNNÉ PRO OZNAČENÍ KTEROU NODU PRÁVĚ OPRAVUJU
-   ============================================================ */
+// ======================================================
+// GLOBÁLNÍ PROMĚNNÉ PRO OZNAČENÍ KTEROU NODU PRÁVĚ OPRAVUJU
+// ======================================================
 
 let currentEditingFilename = "";
 let currentDeletingFilename = "";
@@ -33,9 +35,88 @@ let currentEditingFavorite = false;
 let allLoadedNotes = []; 
 
 
-/* ============================================================
-   VĚCI, KTERÉ Z UI MUSÍM PROSTĚ PŘEPSAT DO JS (nejde jinak)
-   ============================================================ */
+// ============================================================
+// UI SETTINGS
+// ============================================================
+
+// načtení uložených hodnot při startu aplikace
+function LoadSavedSettings() {
+
+  const root = document.documentElement; 
+
+  // načtení hodnot z localStorage nebo použití výchozích
+  const savedTheme = localStorage.getItem("app-theme") || "dark";
+  const savedFontSize = localStorage.getItem("app-font-size") || "16";
+  const savedFont = localStorage.getItem("app-font") || "Rajdhani";
+
+  root.setAttribute("data-theme", savedTheme);
+  root.setAttribute("data-font", savedFont);
+
+  // pro slider se nastavuje CSS hodnota přímo přes js
+  root.style.setProperty("--base-font-size", `${savedFontSize}px`);
+
+  // sychronizace UI s tlačítky a slidery v nastavení
+  const themeToggle = document.getElementById("theme-toggle");
+  const fontSizeSlider = document.getElementById("font-size");
+  const fontSelect = document.getElementById("font-family");
+
+  if (themeToggle) {
+    themeToggle.checked = savedTheme === "light"; 
+  }
+  if (fontSizeSlider) {
+    fontSizeSlider.value = savedFontSize;
+  }
+  if (fontSelect) {
+    fontSelect.value = savedFont;
+  }
+}
+
+// bindování tlačítek v settings
+function SettingsFunctionality() {
+
+  const root = document.documentElement;
+
+  // dark / light
+  const themeToggle = document.getElementById("theme-toggle");
+  if (themeToggle) {
+
+    themeToggle.addEventListener("change", (e) => {
+      
+      const newTheme = e.target.checked ? "light" : "dark";
+      root.setAttribute("data-theme", newTheme);
+      localStorage.setItem("app-theme", newTheme);
+    });
+  }
+
+  // font size
+  const fontSizeSlider = document.getElementById("font-size");  
+  if (fontSizeSlider) {
+    
+    fontSizeSlider.addEventListener("input", (e) => {
+      
+      const newSize = e.target.value;
+      root.style.setProperty("--base-font-size", `${newSize}px`);
+      localStorage.setItem("app-font-size", newSize);
+    });
+  }
+
+  // font change
+  const fontSelect = document.getElementById("font-family");  
+  if (fontSelect) {
+
+    fontSelect.addEventListener("change", (e) => {
+
+      const newFont = e.target.value;
+      root.setAttribute("data-font", newFont);
+      localStorage.setItem("app-font", newFont);
+    });
+  }
+}
+
+
+// ============================================================
+// FUNCTIONS FOR FUNCTIONALITY
+// ============================================================
 
 // sidebar movement
 function SidebarMovement() {
@@ -463,3 +544,4 @@ function SearchFunctionality() {
 
 // TODO: interpret na markdown (+ preview okno vedle editu, budou tam 2)
 // TODO: při vkládání více poznámek denně záleží na random dropu druhé části názvu .md souboru (protože když bude první písmeno náhodou Z, tak už se všechny ostatní soubory toho stejného dne budou vkládat jenom za něj a nebudou přímo nahoře = prostě windows souborový systém), for now s tím dokážu žít, protože nevím jak to moc opravit
+// TODO: když dělám search, tak se hledají aji favorite (to nechci)

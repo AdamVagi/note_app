@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
     AutoOverlayAdjustment();
     EditOverlay();
     DeleteOverlay();
+    SearchFunctionality()
 
 
     // loading nodes immediately after app launch
@@ -28,6 +29,8 @@ document.addEventListener("DOMContentLoaded", () => {
 let currentEditingFilename = "";
 let currentDeletingFilename = "";
 let currentEditingFavorite = false;
+// instant search help
+let allLoadedNotes = []; 
 
 
 /* ============================================================
@@ -162,11 +165,18 @@ function AutoOverlayAdjustment() {
   });
 }
 
-// funkce na renderování poznámek na main 
+// předvoj funkce na renderování poznámek na main 
 async function LoadAndRenderNotes() {
 
-  // LOGIC for all nodes (main SPA)
-  const notes = await invoke("list_notes"); 
+  // global var as list of nodes
+  allLoadedNotes = await invoke("list_notes"); 
+  
+  RenderNotes(allLoadedNotes, false); 
+  RenderFavoriteNotes(allLoadedNotes);
+}
+
+// 
+function RenderNotes(notesToRender, searchYesNoBool) {
 
   // kontejner na main page + clean up
   const container = document.getElementById("view-journal");
@@ -175,7 +185,7 @@ async function LoadAndRenderNotes() {
   container.innerHTML = ""; 
   
   // empty stav (první spuštění aplikace) -> custom stav
-  if (notes.length === 0){
+  if (notesToRender.length === 0 && searchYesNoBool == false){
     container.innerHTML = `
       <div class="empty-state">
         <div class="empty-icon">📝</div>
@@ -183,12 +193,22 @@ async function LoadAndRenderNotes() {
         <p>Klikni na <strong>+ New Journal</strong> v levém menu a napiš svoji první poznámku!</p>
       </div>
     `;
-    RenderFavoriteNotes(notes);
+    RenderFavoriteNotes(notesToRender);
+    return;
+  }
+  else if(notesToRender.length === 0 && searchYesNoBool == true){
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">📝</div>
+        <p>Vaše vyhledávání je špatné, žádné záznamy nebyly nalezeny :(</p>
+      </div>
+    `;
+    RenderFavoriteNotes(notesToRender);
     return;
   }
   
   // vykreslení každé uložené poznámky
-  notes.forEach((note) =>{
+  notesToRender.forEach((note) =>{
 
     const article = document.createElement("article");
     article.className = "entry";
@@ -271,7 +291,7 @@ async function LoadAndRenderNotes() {
   });
 
   // počáteční vykreslení sidebaru při načtení aplikace
-  RenderFavoriteNotes(notes);
+  RenderFavoriteNotes(notesToRender);
 }
 
 
@@ -391,17 +411,55 @@ function DeleteOverlay() {
   });
 }
 
+// search fun (sranda)
+function SearchFunctionality() {
+
+  const btnSearch = document.getElementById("btn-search");
+  const searchWrapper = document.getElementById("search-input-wrapper");
+  const searchInput = document.getElementById("search-input");
+  const btnCloseSearch = document.getElementById("close-search-btn");
+  const sidebar = document.getElementById("sidebar");
+
+  btnSearch.addEventListener("click", function () {
+
+    btnSearch.style.display = "none";
+    searchWrapper.classList.remove("hidden");
+      
+    // giving sidebar closing and opening fixed position
+    sidebar.classList.remove("collapsed");
+    
+    NavigateTo("view-journal");
+    
+    // ready to write immediatelly
+    searchInput.focus();
+  });
+
+  // closing search (mostly html adjustments)
+  btnCloseSearch.addEventListener("click", () => {
+    searchWrapper.classList.add("hidden");
+    btnSearch.style.display = "flex";
+    searchInput.value = ""; 
+    LoadAndRenderNotes();
+  });
+
+  // algorithm for searching
+  searchInput.addEventListener("input", (e) => {
+  
+    // transforming input string into more usable form
+    const query = e.target.value.toLowerCase().trim();
+
+    // almost foreach throught all nodes
+    const filteredNotes = allLoadedNotes.filter(note => {
+
+      const contentText = (note.content || "").toLowerCase();
+      const dateText = (note.date || "").toLowerCase();
+
+      return contentText.includes(query) || dateText.includes(query);
+    });
+
+    RenderNotes(filteredNotes, true);
+  });
+}
+
 // TODO: interpret na markdown (+ preview okno vedle editu, budou tam 2)
-
-/* ============================================================
-   ZÁKLADNÍ KOSTRA, KTEROU CHCI POUŽÍT JAKO JENOM API PRO CONNECTION HTML -> RUST
-   ============================================================ */      
-
-/*// 1) najít element
-const btn = document.getElementById('moje-tlacitko');
-// 2) zachytit událost
-btn.addEventListener('click', async () => {
-  // 3) zavolat Rust command
-  const odpoved = await invoke('moji_funkci_pro_tlacitko', { jmeno: 'Uživatel' });
-  vystup.innerText = odpoved;
-});*/
+// TODO: při vkládání více poznámek denně záleží na random dropu druhé části názvu .md souboru (protože když bude první písmeno náhodou Z, tak už se všechny ostatní soubory toho stejného dne budou vkládat jenom za něj a nebudou přímo nahoře = prostě windows souborový systém), for now s tím dokážu žít, protože nevím jak to moc opravit

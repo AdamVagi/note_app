@@ -17,11 +17,25 @@ document.addEventListener("DOMContentLoaded", () => {
   DeleteOverlay();
   SearchFunctionality();
   SettingsFunctionality();
+  FeedbackSend();
 
 
   // loading nodes immediately after app launch
   LoadAndRenderNotes();
 });
+
+
+
+/*
+----------------------------
+
+----------------------------
+
+ještě před tím než to vydám, + refaktorizace + git repozitory úklid
+
+----------------------------
+
+----------------------------*/ 
 
 
 // ======================================================
@@ -211,7 +225,6 @@ function NodeOverlay() {
         content: content
     });
 
-    // TODO: ten error handling bude potřeba vyřešit (idk zatím)
     if (!odpoved) {
       showErrorNotification("Uložení poznámky selhalo! Zkontrolujte souborový systém.");
     }
@@ -221,16 +234,12 @@ function NodeOverlay() {
     textarea.value = "";
     overlay.classList.add("hidden");
 
-    // TODO: toto je zatím optional, protože nemám otestovaný, jak se to bude chovat když textarea bude rozšířená na > default
-    // textarea.style.height = "auto";
-
     // update main page with notes
     LoadAndRenderNotes();
     
   });
 }
 
-// TODO: přidat tady tuto funkcionalitu i do všech dalších overlayů
 // function for allignment adjustment during node inserting (automatic)
 function AutoOverlayAdjustment() {
 
@@ -412,9 +421,6 @@ function RenderFavoriteNotes(allNotes) {
   });
 }
 
-// TODO: když bude moc textu v normální poznámce na main page (tak zkrátit) ->nvm ještě
-// TODO: kliknutí na poznámku (favorite) -> forwarding na místo na main page, kde se nachází konkrétní node
-
 // func. segment = původně jsem volal tuto funkci z foreach cyklu a addEventListener (přidání posluchače události) jsem dal ke každé poznámce (ale takhle by vznikl deadlock -> zárva)
 //                 takže jeden overlay, jeden exit a save tlačítko se volá pokaždé jen jednou
 //                 nebudeme si komplikovat život, prostě přes klikání na edit tlačítko se bude otevírat a hotovo, nic víc    
@@ -542,6 +548,38 @@ function SearchFunctionality() {
   });
 }
 
-// TODO: interpret na markdown (+ preview okno vedle editu, budou tam 2)
-// TODO: při vkládání více poznámek denně záleží na random dropu druhé části názvu .md souboru (protože když bude první písmeno náhodou Z, tak už se všechny ostatní soubory toho stejného dne budou vkládat jenom za něj a nebudou přímo nahoře = prostě windows souborový systém), for now s tím dokážu žít, protože nevím jak to moc opravit
-// TODO: když dělám search, tak se hledají aji favorite (to nechci)
+function FeedbackSend(){
+  
+  const form = document.getElementById('feedback-form');
+
+  form.addEventListener('submit', async function(event) {
+    
+    // zábrana tomu, aby se stránka načetla znovu
+    event.preventDefault(); 
+    
+    // get data z formuláře
+    const data = new FormData(event.target);
+    
+    // odeslat data
+    fetch(event.target.action, {
+      method: form.method,
+      body: data,
+      headers: {
+          'Accept': 'application/json'
+      }
+    }).then(response => {
+
+      if (response.ok) {
+
+        alert("Díky za feedback! Ozveme se brzy."); 
+        form.reset();
+        document.getElementById('close-feedback').click(); 
+      } else {
+
+        alert("Jejda, něco se pokazilo při odesílání.");
+      }
+    }).catch(error => {
+      alert("Problém s připojením.");
+    });
+  });
+}

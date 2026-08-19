@@ -149,13 +149,6 @@
           </div>
         </div>
       </section>
-            
-      <!-- ideas for SETTINGS:
-          - změna layoutu poznámek na main page - to ještě hodně promyslet (live change)
-          - Export / Import nastavení: Uložení preferencí do .json souboru (zatím optional)
-          - Ukládání dat (Local Storage): Přepínač, zda se má stav aplikace ukládat lokálně v prohlížeči (tohle think it over over time)
-          - change jazyka (prostě rollbaru jako je to u fontu)
-          - -->    
 
       <section id="view-about" class="app-view settings-card">
 
@@ -176,10 +169,10 @@
 
             <div class="about-item">
               <div class="about-info">
-                <label>Version:</label>
+                <label>Current Version:</label>
                 <div class="status-badge">
                   <span class="status-dot"></span>
-                  <span>IN PROGRESS (1.0.0)</span>
+                  <span>1.0.0</span>
                 </div>
               </div>
             </div>
@@ -221,8 +214,7 @@
               <div class="about-info">
                 <label>What's new in latest version:</label>
                 <div class="status-badge">
-                  <span class="status-dot"></span>
-                  <span>BUILD IN PROGRESS</span>
+                  <span>Úplně první funkční verze (MVP), první vydání aplikace !!</span>
                 </div>
               </div>
             </div>
@@ -231,15 +223,8 @@
           <div class="about-copyright">
             <p>© 2026 Created with passion</p>
           </div>
-
         </div>
-
-        <!-- ideas for About: 
-          - Číslo verze + změny, které byly vytvořeny v této verzi
-          - Kontrola aktualizací = tlačítko, které přes JS/Tauri prověří, zda není k dispozici novější verze
-          - Použitý Tech-Stack: Zobrazení malých štítků/tagů (Tauri, Rust, Vanilla JS, CSS3), což vypadá skvěle pro vývojáře i zvědavé uživatele
-          - Licence (MIT License / Open Source) a odkaz na licenční ujednání
-          - odkaz na Github -->           
+       
       </section>
 
       <section id="view-improvement" class="app-view settings-card">
@@ -254,29 +239,22 @@
           </button>
         </div>
         
-        <div class="feedback-content">
-          <div class="feedback-group">
-            <h3>PAYPAL DONO NA VÝVOJ APLIKACE (VOLUNTEER)</h3>
-
-            <div class="feedback-item">
-              <div class="feedback-info">
-                <label>Odkaz:</label>
-              </div>
-            </div>
-
-            <h3>SEND ME YOUR SUGGESTIONS FOR APP UPDATE THROUGHT THIS: (form sended throught email to me)</h3>
-
-            <div class="feedback-item">
-              <div class="feedback-info">
-                <label>Odkaz:</label>
-              </div>
-            </div>
+        <!-- Feedback form -->
+        <form action="https://formspree.io/f/xoeaylra" method="POST" id="feedback-form">
+          
+          <div class="form-group">
+            <label for="email">Tvůj e-mail (nepovinné, pokud chceš odpověď):</label>
+            <input type="email" id="email" name="email" placeholder="email@priklad.cz">
           </div>
-        </div>
 
-        <!-- ideas for feedback: 
-          - tady to napojit na tu funkci, že mi to pošle email (claude chat) 
-          - no a ten voluteer paypal pro dono - Kávový / Donut button (PayPal/BuyMeACoffee): Samostatný stylový block/řádek pro podporu vývoje -->
+          <div class="form-group">
+            <label for="message">Tvůj nápad na vylepšení:</label>
+            <textarea id="message" name="message" rows="4" required placeholder="Co bys změnil?"></textarea>
+          </div>
+
+          <button type="submit" class="submit-btn">Odeslat feedback</button>
+        </form>
+
       </section>
 
 
@@ -354,10 +332,6 @@
          ========================================= -->
       <section id="view-journal" class="app-view active"></section>
  
-
-      <!-- TODO: celkově to všechno sjednotit jazykově (jak kód tak co se zobrazuje do reálné aplikace, tak přepsat do AJ - teď zmatek) --> 
-      <!-- TODO: settings-container (nevím jestli jsem to špatně pojmenoval nebo co to je a proč to není uzavřený a proč mi to leze do main page --> 
-      <!-- TODO: takže to bude chtít kompletní refaktoring (UI) -> klidně to hodit claudovi ať si s tím pohraje + do toho stejnýho promptu hodit claudovi něco takovýho = zhodnoť moji aplikaci jako kritik, ale takovým způsobem aby mi to pomohlo dostat tu aplikaci k co nejvíce lidem a aby fungovalu ku prospěchu co nejvíce lidí (+ cesty propagace)--> 
     </main>    
   </body>
 </html>

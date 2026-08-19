@@ -103,7 +103,6 @@ fn parse_markdown_file(content: &str) -> (String, String, String, bool) {
 //------------------------
 
 // struct pro záznamy (potřeba při volání list_notes dotazu - vrácení seznamu structů je pro js lepší a rychlejší)
-// TODO: ty všechny atributy jso pro mě novinka (nevím jestli jsou nesecary tam mít)
 #[derive(Serialize, Debug, Clone)]
 struct NoteData {
     // pub -> public
@@ -131,7 +130,6 @@ fn new_note(app: tauri::AppHandle) -> String{
     // aktuální čas
     let now = chrono::Local::now();
 
-    // TODO: check formát (this is how we want it = 2026-03-30)
     let date_string = now.format("%Y-%m-%d").to_string();
 
     let random_id = random_string(10);
@@ -142,14 +140,12 @@ fn new_note(app: tauri::AppHandle) -> String{
     let path = notes_dir(&app).join(&filename);
 
     // insert header s metadaty
-    // TODO: tady je question jestli chceme filename celej file.md a nebo filename bez .md
     let initial_file_content = format!(
         "---\nfilename: {}\ndate: {}\nfavorite: {}\n---\n",
         filename, date_string, false
     );
 
     // vložení prázdné poznámky s hlavičkou
-    // TODO: neřešil jsem aby funkce byly schopny řešit result (takže _ znamená, že i když se to vkládání podělá, tak ta funkce ten error prostě přejde -> idk jestli right)
     let _ = fs::write(&path, initial_file_content);
 
     // tady není potřeba return celého structu do js, protože tohle je jenom vytváření poznámky, ne žádná úprava
@@ -206,7 +202,6 @@ fn delete_note(app: tauri::AppHandle, filename: String) -> bool{
 
 // update metadat + případně i contentu
 #[tauri::command]
-// TODO: update contentu se dá jednoduše napojit na tuto funkci a ani není potřeba nic měnit
 fn update_note(app: tauri::AppHandle, filename: String, content: String, favorite: bool) -> bool {
 
     let path = notes_dir(&app).join(&filename);
@@ -270,9 +265,6 @@ fn list_notes(app: tauri::AppHandle) -> Vec<NoteData> {
     notes.sort_by(|a, b| b.filename.cmp(&a.filename));
     return notes;
 }
-
-// TODO: dodělat něco jako update nebo write (až budu dělat node update, tak)
-// TODO: revision + add == getNote(), loadNote()
 
 //jakože main
 #[cfg_attr(mobile, tauri::mobile_entry_point)]

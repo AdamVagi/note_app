@@ -5,8 +5,6 @@
     box-sizing: border-box;
 }
 
-/* TODO: kromě light/dark modu přidat ještě nějaké další options (cyberpunk) */
-
 @font-face {
   font-family: 'Rajdhani';
   src: url('./fonts/Rajdhani-Regular.ttf') format('truetype'); 
@@ -18,7 +16,7 @@
    DEFAULT VALUES FOR GRAPHICS ASPECT
    ============================================================ */
    
-/*Default: Dark Mode, Medium font, Sans-serif)*/
+/*Default: Dark Mode */
 :root {
   --base-font-size: 16px;
   --main-font-family: 'Rajdhani', sans-serif;
@@ -824,8 +822,9 @@ input:checked + .slider:before {
 
 .feedback-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
+  position: relative;
   border-bottom: 1px solid var(--card-border);
   padding-bottom: 20px;
   margin-bottom: 28px;
@@ -833,12 +832,14 @@ input:checked + .slider:before {
 
 .feedback-header h2 {
   margin: 0;
-  margin-left: 85px;
   font-size: 1.15rem;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text-main);
+  flex: 1; 
+  text-align: center;
+  padding-left: 20px; 
 }
 
 .feedback-group {
@@ -1356,4 +1357,80 @@ input:checked + .slider:before {
   max-width: 350px;
   font-size: 0.95rem;
   line-height: 1.5;
+}
+
+/* ============================================================
+   FEEDBACK SEND
+   ============================================================ */
+
+#feedback-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 8px 0;
+  font-family: var(--main-font-family);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+#feedback-form input[type="email"],
+#feedback-form textarea {
+  width: 100%;
+  padding: 10px 12px;
+  background-color: var(--bg-card);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-family: var(--main-font-family);
+  font-size: var(--base-font-size);
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+#feedback-form input[type="email"]::placeholder,
+#feedback-form textarea::placeholder {
+  color: var(--text-placeholder);
+}
+
+#feedback-form input[type="email"]:focus,
+#feedback-form textarea:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+#feedback-form textarea {
+  resize: vertical;
+  min-height: 90px;
+}
+
+.submit-btn {
+  background-color: var(--accent-color);
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 16px;
+  font-family: var(--main-font-family);
+  font-size: var(--base-font-size);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.submit-btn:hover {
+  background-color: var(--accent-blue-hover);
+}
+
+.submit-btn:active {
+  transform: scale(0.98);
 }

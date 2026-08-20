@@ -16,6 +16,15 @@ The application is built on a modern and fast desktop application stack:
 * **Frontend:** JavaScript, HTML, CSS
 * **Backend:** Rust, Tauri
 
+## 📥 Download and Installation
+
+You can download the latest version of the application directly from the [Releases](https://github.com/AdamVagi/note_app/releases/latest) page.
+
+Installers are available for all major platforms:
+* **Windows:** Download `.exe` or `.msi` file and install.
+* **macOS:** Download the `.dmg` or `.app` file.
+* **Linux:** `.deb` or `.AppImage` packages are available.
+
 ## ⚙️ Developer launch
 
 Before launching, you must have the Rust and Tauri environments installed. Then, just clone the repository and run:

@@ -203,13 +203,27 @@ function NodeOverlay() {
     overlay.classList.remove("hidden");
   });
 
-  // closing (in the future maybe duplicate due to add btn)
-  const close_button = document.querySelector(".close-new-node-btn");
-  
-  close_button.addEventListener("click", function () {
-      overlay.classList.add("hidden");
+  // -------------------- MARKDOWN PREVIEW ----------------------
+  const content = document.getElementById("node-content");
+  const contentDisplay = document.getElementById("node-content-preview");
+
+  content.addEventListener("input", (e) => {
+
+    const query = e.target.value;
+
+    if (query.trim() === "") {
+      contentDisplay.innerHTML = "<i>Takhle bude vypadat váš text, až ho uložíte...</i>";
+      return;
+    }
+    
+    const justHtml = marked.parse(query);
+    const readyHtmlContent = DOMPurify.sanitize(justHtml);
+
+    // displaying
+    contentDisplay.innerHTML = readyHtmlContent;
   });
 
+  // ------------------- NODE ADD BUTTON PRESS -------------------
   // all overlay buttons related functionality
   const node_add = document.querySelector(".add-node-btn");
 
@@ -232,11 +246,25 @@ function NodeOverlay() {
     // zavřít overlay a zaktualizovat UI 
     const textarea = document.getElementById("node-content");
     textarea.value = "";
+    contentDisplay.innerHTML = "<i>Takhle bude vypadat váš text, až ho uložíte...</i>";
+    content.style.height = "";
+    contentDisplay.style.height = "";
     overlay.classList.add("hidden");
 
     // update main page with notes
     LoadAndRenderNotes();
     
+  });
+
+  // closing (in the future maybe duplicate due to add btn)
+  const close_button = document.querySelector(".close-new-node-btn");
+  
+  close_button.addEventListener("click", function () {
+    overlay.classList.add("hidden");
+    document.getElementById("node-content").value = "";
+    contentDisplay.innerHTML = "<i>Takhle bude vypadat váš text, až ho uložíte...</i>";
+    content.style.height = "";
+    contentDisplay.style.height = "";
   });
 }
 
@@ -304,6 +332,10 @@ function RenderNotes(notesToRender, searchYesNoBool) {
     article.className = "entry";
     // article.dataset.filename = note.filename;
 
+    // HTML -> markdown formating transition
+    const justHtml = marked.parse(note.content);
+    const readyHtmlContent = DOMPurify.sanitize(justHtml);
+
     // HTML struktura
     article.innerHTML = `
       <div class="entry-header">
@@ -315,7 +347,7 @@ function RenderNotes(notesToRender, searchYesNoBool) {
         </div>
       </div>
       <div class="content">
-        <p class="note-text">${note.content || "<i>Prázdná poznámka...</i>"}</p>
+        <p class="note-text">${readyHtmlContent || "<i>Prázdná poznámka...</i>"}</p>
       </div>
     `;
 

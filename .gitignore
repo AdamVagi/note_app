@@ -29,5 +29,5 @@ src-tauri/icons/
 src-tauri/capabilities/
 src/assets/
 src-tauri/.gitignore
-package-lock.json
+src-tauri/.target
 .vscode/

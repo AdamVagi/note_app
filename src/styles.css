@@ -7,7 +7,7 @@
 
 @font-face {
   font-family: 'Rajdhani';
-  src: url('./fonts/Rajdhani-Regular.ttf') format('truetype'); 
+  src: url('../src-tauri/fonts/Rajdhani-Regular.ttf') format('truetype'); 
   font-weight: 400; 
   font-style: normal;
 }
@@ -682,7 +682,7 @@ input:checked + .slider:before {
 #view-settings,
 #view-about,
 #view-improvement {
-  background-color: var(--bg-card);
+  background-color: var(--bg-primary);
   border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 32px;
@@ -888,8 +888,8 @@ input:checked + .slider:before {
 }
 
 .overlay {
-  width: 650px;
-  max-width: 90vw;
+  width: 850px;
+  max-width: 92vw;
   background: var(--bg-primary);
   border-radius: 12px;
   padding: 24px;
@@ -946,25 +946,72 @@ input:checked + .slider:before {
 .overlay-body {
   display: flex;
   flex-direction: column;
+  width: 100%;
+}
+
+.editor-layout {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+  align-items: stretch;
+}
+
+.editor-column {
+  flex: 1; 
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.column-label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+#node-content,
+.preview-box {
+  width: 100%;
+  min-height: 250px; 
+  max-height: 540px; 
+  box-sizing: border-box;
+  overflow-y: auto;  
 }
 
 #node-content,
 #edit-node-content {
-  width: 100%;
   background: var(--border-secondary);
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  padding: 16px;
+  padding: 14px;
   color: var(--text-main);
   font-size: 1rem;
   font-family: inherit;
-  resize: none; 
-  overflow: hidden; 
-  min-height: 120px;
-  max-height: 450px;
   overflow-y: auto;
-  box-sizing: border-box;
+  resize: none;
   transition: border-color 0.2s;
+}
+
+.preview-box {
+  padding: 14px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-main);
+  overflow-y: auto;
+  word-break: break-word; 
+  transition: border-color 0.2s;
+}
+
+.overlay-footer {
+  margin-top: 10px;
+}
+
+.markdown-hint {
+  font-size: 0.75rem;
+  color: var(--text-faded);
 }
 
 #node-content:focus,
@@ -1077,6 +1124,7 @@ input:checked + .slider:before {
   display: flex;
   flex-direction: column;
   align-items: center;
+  background-color: var(--bg-card);
 }
 
 .container {
@@ -1096,7 +1144,7 @@ input:checked + .slider:before {
 
 #view-journal {
   width: 100%;
-  max-width: 900px;
+  max-width: 1200px;
 }
 
 #view-journal.active {

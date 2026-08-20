@@ -5,6 +5,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
     <link rel="stylesheet" href="styles.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Journal</title>
@@ -243,7 +244,7 @@
         <form action="https://formspree.io/f/xoeaylra" method="POST" id="feedback-form">
           
           <div class="form-group">
-            <label for="email">Tvůj e-mail (nepovinné, pokud chceš odpověď):</label>
+            <label for="email">Tvůj e-mail:</label>
             <input type="email" id="email" name="email" placeholder="email@priklad.cz">
           </div>
 
@@ -274,11 +275,26 @@
           </div>
 
           <div class="overlay-body">
-            <textarea id="node-content" placeholder="Insert your thoughts..." rows="6"></textarea>
+            <div class="editor-layout">
+              <!-- left side = user insertion place -->
+              <div class="editor-column">
+                <label class="column-label">Editor:</label>
+                <textarea id="node-content" placeholder="Insert your thoughts..." rows="8"></textarea>
+                <span class="markdown-hint">Podporuje Markdown: **tučné**, *kurzíva*, # nadpis, - seznam</span>
+              </div>
+
+              <!-- right side = live preview in markdown -->
+              <div class="editor-column">
+                <label class="column-label">Preview:</label>
+                <div id="node-content-preview" class="preview-box">
+                  <i>Takhle bude vypadat váš text, až ho uložíte...</i>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div class="overlay-footer">
-            <button class="add-node-btn" id="add-node">Add node</button>
+              <button class="add-node-btn" id="add-node">Add node</button>
           </div>
         </div>
       </div>

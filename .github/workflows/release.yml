@@ -2,7 +2,10 @@ name: Release
 on:
   push:
     tags:
-      - 'v*' # Akce se spustí, když vytvoříš tag začínající na "v" (např. v1.0.0)
+      - 'v*' # tag creation = "v" (v1.0.0)
+
+permissions:
+  contents: write
 
 jobs:
   release:
@@ -25,7 +28,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable

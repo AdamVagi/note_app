@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 ----------------------------
 
-ještě před tím než to vydám, + refaktorizace + git repozitory úklid
+refaktorizace 
 
 ----------------------------
 

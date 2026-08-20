@@ -25,9 +25,7 @@ dist-ssr
 
 # my adds
 # TODO: ty icons se budou měnit, takže pak ještě celej repozitář na githubu bude potřeba upravit (aby se to tvářilo seriózně)
-src-tauri/icons/
 src-tauri/capabilities/
-src/assets/
 src-tauri/.gitignore
-src-tauri/.target
-.vscode/
+src-tauri/target
+src-tauri/gen

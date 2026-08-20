@@ -947,6 +947,8 @@ input:checked + .slider:before {
   display: flex;
   flex-direction: column;
   width: 100%;
+  min-height: 200px;
+  max-height: 650px;
 }
 
 .editor-layout {
@@ -980,8 +982,7 @@ input:checked + .slider:before {
   overflow-y: auto;  
 }
 
-#node-content,
-#edit-node-content {
+#node-content {
   background: var(--border-secondary);
   border: 1px solid var(--border-color);
   border-radius: 8px;
@@ -991,6 +992,23 @@ input:checked + .slider:before {
   font-family: inherit;
   overflow-y: auto;
   resize: none;
+  transition: border-color 0.2s;
+}
+
+#edit-node-content {
+  width: 100%;
+  min-height: 450px; 
+  max-height: 600px;
+  background: var(--border-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 14px;
+  color: var(--text-main);
+  font-size: 1rem;
+  font-family: inherit;
+  box-sizing: border-box;
+  overflow-y: auto;
+  resize: vertical; 
   transition: border-color 0.2s;
 }
 

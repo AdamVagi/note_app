@@ -31,7 +31,7 @@ fn notes_dir(app: &tauri::AppHandle) -> PathBuf{
     fs::create_dir_all(&path).unwrap();
 
     // custom print (path k .md filům)
-    println!(">>> CESTA K POZNÁMKÁM: {:?} <<<", path);
+    // println!(">>> CESTA K POZNÁMKÁM: {:?} <<<", path);
     
     return path
 }

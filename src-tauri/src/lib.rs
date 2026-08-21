@@ -23,15 +23,27 @@ use serde::Serialize;                   // sending structs to js
 
 // vrací path do vytvořeného adresáře "notes" pro uložení notes 
 fn notes_dir(app: &tauri::AppHandle) -> PathBuf{
+
     // zjištění path pro složku, kde budou uložena data aplikace
     let mut path = app.path().app_data_dir().unwrap();
+
     // do path se přidá další adresář (\MyApp\notes)
+    // path.push("notes");
+
+    // dev režim, tato část se zkompiluje pouze při -> (npm run tauri dev) 
+    #[cfg(debug_assertions)]
+    path.push("notes-dev");
+
+    // building release, tato část se zkompiluje když se tvoří produkční verze skrz GitHub Actio (.exe) 
+    #[cfg(not(debug_assertions))]
     path.push("notes");
+
+
     // pokud neexistuje -> vytvoř, pokud existuje jako notes, tak nech tak jak je (ošetření prvotního insertu)
     fs::create_dir_all(&path).unwrap();
 
     // custom print (path k .md filům)
-    // println!(">>> CESTA K POZNÁMKÁM: {:?} <<<", path);
+    println!(">>> CESTA K POZNÁMKÁM: {:?} <<<", path);
     
     return path
 }
@@ -260,9 +272,9 @@ fn list_notes(app: tauri::AppHandle) -> Vec<NoteData> {
 
         notes.push(note);
     }
-        
-    // seřazení podle názvu sestupně
-    notes.sort_by(|a, b| b.filename.cmp(&a.filename));
+
+    // seřazení podle data přidání sestupně
+    notes.sort_by(|a, b| b.date.cmp(&a.date));
     return notes;
 }
 

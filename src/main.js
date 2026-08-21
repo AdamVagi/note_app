@@ -249,6 +249,7 @@ function NodeOverlay() {
     contentDisplay.innerHTML = "<i>Takhle bude vypadat váš text, až ho uložíte...</i>";
     content.style.height = "";
     contentDisplay.style.height = "";
+
     overlay.classList.add("hidden");
 
     // update main page with notes

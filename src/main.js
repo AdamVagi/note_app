@@ -1,9 +1,11 @@
-// invoke() -> propojení frontend JavaScript a backend Rust
+// invoke() -> connection between frontend (JavaScript) calls and backend (Rust) commands
 const { invoke } = window.__TAURI__.core;
 
+// EOL breaks in markdown are badly translated into HTML (<br>) -> fix
+marked.setOptions({ breaks: true, gfm: true });
 
 // ======================================================
-// INICIALIZACE APLIKACE (main)
+// APP INITIALIZATION (main)
 // ======================================================
 document.addEventListener("DOMContentLoaded", () => {
   
@@ -18,6 +20,13 @@ document.addEventListener("DOMContentLoaded", () => {
   SearchFunctionality();
   SettingsFunctionality();
   FeedbackSend();
+  
+  /* TODO:
+  
+  Notifications();
+  ExternalLinks();
+  CollapseSidebarOnSmallScreens();
+  */
 
 
   // loading nodes immediately after app launch
@@ -39,13 +48,14 @@ refaktorizace
 
 
 // ======================================================
-// GLOBÁLNÍ PROMĚNNÉ PRO OZNAČENÍ KTEROU NODU PRÁVĚ OPRAVUJU
+// GLOBAL VARIABLES
+// -> tracks which entry is currently open in the edit/delete overlay, and
+//    keeps the full, unfiltered list of entries from the last load
 // ======================================================
 
 let currentEditingFilename = "";
 let currentDeletingFilename = "";
 let currentEditingFavorite = false;
-// instant search help
 let allLoadedNotes = []; 
 
 
@@ -53,29 +63,27 @@ let allLoadedNotes = [];
 // UI SETTINGS
 // ============================================================
 
-// načtení uložených hodnot při startu aplikace
+// applies saved settings (or defaults) on startup, and keeps the settings controls themselves in sync with whatever was applied
 function LoadSavedSettings() {
 
   const root = document.documentElement; 
 
-  // načtení hodnot z localStorage nebo použití výchozích
+  // loading variables from localStorage or default
   const savedTheme = localStorage.getItem("app-theme") || "dark";
   const savedFontSize = localStorage.getItem("app-font-size") || "16";
   const savedFont = localStorage.getItem("app-font") || "Rajdhani";
 
   root.setAttribute("data-theme", savedTheme);
   root.setAttribute("data-font", savedFont);
-
-  // pro slider se nastavuje CSS hodnota přímo přes js
   root.style.setProperty("--base-font-size", `${savedFontSize}px`);
 
-  // sychronizace UI s tlačítky a slidery v nastavení
   const themeToggle = document.getElementById("theme-toggle");
   const fontSizeSlider = document.getElementById("font-size");
   const fontSelect = document.getElementById("font-family");
 
+  // sync
   if (themeToggle) {
-    themeToggle.checked = savedTheme === "light"; 
+    themeToggle.checked = savedTheme === "light";
   }
   if (fontSizeSlider) {
     fontSizeSlider.value = savedFontSize;
@@ -85,7 +93,7 @@ function LoadSavedSettings() {
   }
 }
 
-// bindování tlačítek v settings
+// binding the controls on the settings overlay
 function SettingsFunctionality() {
 
   const root = document.documentElement;
@@ -125,47 +133,141 @@ function SettingsFunctionality() {
       localStorage.setItem("app-font", newFont);
     });
   }
+
+  // reset button
+  const resetButton = document.getElementById("btn-reset-settings");
+  if (resetButton) {
+
+    resetButton.addEventListener("click", () => {
+
+      localStorage.removeItem("app-theme");
+      localStorage.removeItem("app-font-size");
+      localStorage.removeItem("app-font");
+      LoadSavedSettings();
+      showNotification("Settings restored to defaults.", "success");
+    });
+  }
 }
 
 
 // ============================================================
-// FUNCTIONS FOR FUNCTIONALITY
+// NOTIFICATIONS (toast messages)
+// ============================================================
+ 
+/*TODO: 
+function Notifications() {
+
+  if (document.getElementById("toast-region")) return;
+ 
+  const region = document.createElement("div");
+  region.id = "toast-region";
+  region.className = "toast-region";
+  region.setAttribute("aria-live", "polite");
+  region.setAttribute("aria-atomic", "true");
+  document.body.appendChild(region);
+}
+ 
+// Shows a short, self-dismissing message. `type` is "success", "error", or "info".
+function showNotification(message, type = "info") {
+  const region = document.getElementById("toast-region");
+  if (!region) return;
+ 
+  const toast = document.createElement("div");
+  toast.className = `toast toast-${type}`;
+  toast.textContent = message;
+  region.appendChild(toast);
+ 
+  requestAnimationFrame(() => toast.classList.add("visible"));
+ 
+  setTimeout(() => {
+    toast.classList.remove("visible");
+    toast.addEventListener("transitionend", () => toast.remove(), { once: true });
+  }, 4000);
+}*/
+
+
+/* TODO: nejde otevřít externí links (github), takže je potřeba tohle
+// ============================================================
+// EXTERNAL LINKS
+// Opens http(s) links (the GitHub link in About, and any links inside
+// rendered entry content) in the user's default browser instead of
+// navigating this app's own window away from itself. Uses the Tauri
+// "opener" plugin that's already configured on the Rust side, with a
+// plain window.open() fallback if that binding isn't available.
+// ============================================================
+ 
+function ExternalLinks() {
+  document.addEventListener("click", (event) => {
+    const link = event.target.closest("a[href^='http://'], a[href^='https://']");
+    if (!link) return;
+ 
+    event.preventDefault();
+ 
+    const opener = window.__TAURI__ && window.__TAURI__.opener;
+    if (opener && typeof opener.openUrl === "function") {
+      opener.openUrl(link.href);
+    } else {
+      window.open(link.href, "_blank", "noopener,noreferrer");
+    }
+  });
+}*/
+
+
+// ============================================================
+// SIDEBAR
 // ============================================================
 
-// sidebar movement
 function SidebarMovement() {
 
-  // nalezení sidebaru + tlačítka, které chceme aby s tím sidebarem hýbalo
   const sidebar = document.getElementById('sidebar');
   const btnToggle = document.getElementById('btn-toggle');
 
-  // check jestli opravdu existuje tlačítko a sidebar (jinak js spadne na chybě)
+  // existence fault check (if error, js not responding by default)
   if (btnToggle && sidebar) {
-    // když user stiskne tlačítko, tak spusť tento kód
+
     btnToggle.addEventListener('click', () => {
       sidebar.classList.toggle('collapsed');
     });
   }
 };
 
+/*TODO: 
+// Starts with the sidebar collapsed on narrow viewports so the journal
+// content has room to breathe. The toggle button still works normally
+// from there in either direction.
+// Pokud je aplikace otevřená na malé obrazovce (šířka maximálně 768 px), při spuštění automaticky sbal postranní panel.
+// responsive design (mobila nebo úzká obrazovka)
+function CollapseSidebarOnSmallScreens() {
+  const sidebar = document.getElementById("sidebar");
+  if (sidebar && window.matchMedia("(max-width: 768px)").matches) {
+    sidebar.classList.add("collapsed");
+  }
+}*/
+
+//-------------
+// ENDE FOR NOW (not much - need more time)
+//-------------
+
 // když se stiskne tlačítko, tak se předá do další funkce, která přepne stav active
+// single-page navigation: shows the requested view and hides the rest
 function ButtonsNavigation() {
   
-  // najdeme všechny buttony, které jsme schopni přepínat
+  // all the buttons responsible for view switching
   const buttons = document.querySelectorAll(".footer-btn, .close-btn");
 
-  // když někdo klikne na tlačítko, tak se přepne na tu stránku (přes ještě jednu další funkci)
   for (const button of buttons) {
     
     button.addEventListener("click", function () {
       
-      // chceme title
+      // directing throught data-target (HTML)
       const target = button.getAttribute("data-target");
       NavigateTo(target);
     });
   }
 }
   
+
+// single-page navigation: shows the requested view and hides the rest
 // buttons functionality connection to other pages (SPA = single page application)
 function NavigateTo(viewId) {  // -> argument, který máme v HTML (data-target)
  

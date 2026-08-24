@@ -48,11 +48,9 @@
         <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
         <span class="label">Favorite Journals</span>
       </div>
+      
 
-      <!-- =========================================
-        FAVORITE NODES CONNECTED THROUGHT JS
-      ========================================= -->
- 
+      <!-- favorite notes (entries) are rendered here by main.js -->
       <div id="note-list"></div>
 
       <div class="sidebar-footer">
@@ -81,11 +79,12 @@
       </div>
     </aside>
 
-    <!-- zbytek okna aplikace (full rozlišení - sidebar = this), jeden html souboru
-         všechno se zobrazuje na jedné stránce, takže zbytek přijde do této sekce (main-content)-->
- 
+
+    <!-- main-content area. SPA (single page app) = app window - sidebar = this 
+      every view below is shown or hidden by toggling the `active`class from main.js -->
     <main class="main-content">
-                                <!-- 2 třídy pro lepší práci v css-->
+
+      <!-- settings overlay --> <!-- 2 classes for easier work with css-->
       <section id="view-settings" class="app-view settings-card">
 
         <div class="settings-header">
@@ -146,12 +145,13 @@
                 <label>Reset Settings:</label>
                 <span class="setting-desc">Restore default UI preferences</span>
               </div>
-              <button class="btn-danger-outline">Reset to Default</button>
+              <button class="btn-danger-outline" id="btn-reset-settings">Reset to Default</button>
             </div>
           </div>
         </div>
       </section>
 
+      <!-- about app overlay -->
       <section id="view-about" class="app-view settings-card">
 
         <div class="about-header">
@@ -202,8 +202,7 @@
                 <label>Source Code:</label>
                 <span class="about-desc">View repository on GitHub</span>
               </div>
-              <a href="https://github.com/AdamVagi/note_app" target="_blank" rel="noopener" class="btn-link">
-                GitHub
+              <a href="https://github.com/AdamVagi/note_app" target="_blank" rel="noopener" class="btn-link">GitHub
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
                   <polyline points="15 3 21 3 21 9"></polyline>
@@ -216,7 +215,7 @@
               <div class="about-info">
                 <label>What's new in latest version:</label>
                 <div class="status-badge">
-                  <span>Úplně první funkční verze (MVP), první vydání aplikace !!</span>
+                  <span>First working version (MVP) — the initial public release!</span>
                 </div>
               </div>
             </div>
@@ -226,9 +225,9 @@
             <p>© 2026 Created with passion</p>
           </div>
         </div>
-       
       </section>
 
+      <!-- app improvement overlay -->
       <section id="view-improvement" class="app-view settings-card">
 
         <div class="feedback-header">
@@ -241,32 +240,33 @@
           </button>
         </div>
         
-        <!-- Feedback form -->
         <form action="https://formspree.io/f/xoeaylra" method="POST" id="feedback-form">
           
           <div class="form-group">
-            <label for="email">Tvůj e-mail:</label>
-            <input type="email" id="email" name="email" placeholder="email@priklad.cz">
+            <label for="email">Your email: </label>
+            <input type="email" id="email" name="email" placeholder="email@example.com">
           </div>
 
           <div class="form-group">
-            <label for="message">Tvůj nápad na vylepšení:</label>
-            <textarea id="message" name="message" rows="4" required placeholder="Co bys změnil?"></textarea>
+            <label for="message">Your idea for improvement:</label>
+            <textarea id="message" name="message" rows="4" required placeholder="What would you change?"></textarea>
           </div>
 
-          <button type="submit" class="submit-btn">Odeslat feedback</button>
+          <button type="submit" class="submit-btn">Send feedback</button>
         </form>
-
       </section>
 
 
       <!-- =========================================
           END OF SECTIONS, START OF GLOBAL OVERLAYS 
           ========================================= -->
+
+
+      <!-- new entry overlay -->
       <div id="node-overlay" class="hidden">
         <div class="overlay">
           <div class="overlay-header">
-            <h2>NODE ADDING</h2>
+            <h2>New Journal Entry</h2>
             <button class="close-new-node-btn" id="close-new-node" title="Close">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -280,34 +280,32 @@
               <!-- left side = user insertion place -->
               <div class="editor-column">
                 <label class="column-label">Editor:</label>
-                <textarea id="node-content" placeholder="Insert your thoughts..." rows="8"></textarea>
-                <span class="markdown-hint">Podporuje Markdown: **tučné**, *kurzíva*, # nadpis, - seznam</span>
+                <textarea id="node-content" placeholder="Write your thoughts..." rows="8"></textarea>
+                <span class="markdown-hint">Markdown is supported: **bold**, *italic*, # title, - list</span>
               </div>
 
               <!-- right side = live preview in markdown -->
               <div class="editor-column">
                 <label class="column-label">Preview:</label>
                 <div id="node-content-preview" class="preview-box">
-                  <i>Takhle bude vypadat váš text, až ho uložíte...</i>
+                  <i>Your entry text after insertion...</i>
                 </div>
               </div>
             </div>
           </div>
 
           <div class="overlay-footer">
-              <button class="add-node-btn" id="add-node">Add node</button>
+              <button class="add-node-btn" id="add-node">Add Entry</button>
           </div>
         </div>
       </div>
 
 
-      <!-- =========================================
-          CLOSER LOOK AT THE NODE (overlay) -> EDIT
-          ========================================= -->
+      <!-- edit entry overlay -->
       <div id="detail-content-overlay" class="hidden">
         <div class="overlay">          
           <div class="overlay-header">
-            <!-- u této class i think můžeme nechat same name a ono se to jenom napojí na fukční css -->
+            <h2 id="edit-overlay-title">Edit Entry</h2>
             <button class="close-detail-node-btn" id="close-detail-node" title="Close">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -317,36 +315,35 @@
           </div>
 
           <div class="overlay-body">
-            <textarea id="edit-node-content" placeholder="${note.content || "<i>Prázdná poznámka...</i>"}" rows="6"></textarea>
+            <textarea id="edit-node-content" placeholder="${note.content || "<i>Write your enty here...</i>"}" rows="6"></textarea>
           </div>
 
           <div class="overlay-footer">
-            <button class="save-node-btn" id="save-node">Save note</button>
+            <button class="save-node-btn" id="save-node">Save Entry</button>
           </div>
         </div>
       </div>
 
 
-      <!-- =========================================
-          NODE DELETE
-          ========================================= -->
+      <!-- delete confirmation overlay -->
       <div id="delete-content-overlay" class="hidden">
-        <div class="overlay">          
+        <div class="overlay">     
+          <div class="overlay-header">
+            <h2 id="delete-overlay-title">Delete Entry?</h2>
+          </div>     
           <div class="overlay-body">
-            <p>Do you really wanna delete this node forever ?</p>
+            <p id="delete-overlay-desc">This can't be undone. Are you sure you want to delete this entry?</p>
           </div>
 
           <div class="overlay-footer">
-            <button class="yes-btn" id="yes-btn-node">YES</button>
-            <button class="no-btn" id="no-btn-node">NO</button>
+            <button class="yes-btn" id="yes-btn-node">Delete</button>
+            <button class="no-btn" id="no-btn-node">Cancel</button>
           </div>
         </div>
       </div>
 
 
-      <!-- =========================================
-          ALL NODES CONNECTED THROUGHT JS
-         ========================================= -->
+      <!-- journal entries are rendered here by main.js -->
       <section id="view-journal" class="app-view active"></section>
  
     </main>    

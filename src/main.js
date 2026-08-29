@@ -4,6 +4,7 @@ const { invoke } = window.__TAURI__.core;
 // EOL breaks in markdown are badly translated into HTML (<br>) -> fix
 marked.setOptions({ breaks: true, gfm: true });
 
+
 // ======================================================
 // APP INITIALIZATION (main)
 // ======================================================
@@ -20,31 +21,12 @@ document.addEventListener("DOMContentLoaded", () => {
   SearchFunctionality();
   SettingsFunctionality();
   FeedbackSend();
-  
-  /* TODO:
-  
-  Notifications();
   ExternalLinks();
-  CollapseSidebarOnSmallScreens();
-  */
-
-
+  Notifications();
+  
   // loading nodes immediately after app launch
   LoadAndRenderNotes();
 });
-
-
-
-/*
-----------------------------
-
-----------------------------
-
-refaktorizace 
-
-----------------------------
-
-----------------------------*/ 
 
 
 // ======================================================
@@ -154,21 +136,21 @@ function SettingsFunctionality() {
 // NOTIFICATIONS (toast messages)
 // ============================================================
  
-/*TODO: 
 function Notifications() {
 
+  // if the container already exists, do nothing and go away (duplicate protection)
   if (document.getElementById("toast-region")) return;
  
+  // creates the main, empty and yet invisible "drawer" (div)
   const region = document.createElement("div");
   region.id = "toast-region";
   region.className = "toast-region";
-  region.setAttribute("aria-live", "polite");
-  region.setAttribute("aria-atomic", "true");
   document.body.appendChild(region);
 }
  
-// Shows a short, self-dismissing message. `type` is "success", "error", or "info".
+// shows a short, self-dismissing message. `type` is "success", "error", or "info"
 function showNotification(message, type = "info") {
+
   const region = document.getElementById("toast-region");
   if (!region) return;
  
@@ -183,26 +165,25 @@ function showNotification(message, type = "info") {
     toast.classList.remove("visible");
     toast.addEventListener("transitionend", () => toast.remove(), { once: true });
   }, 4000);
-}*/
+}
 
 
-/* TODO: nejde otevřít externí links (github), takže je potřeba tohle
 // ============================================================
 // EXTERNAL LINKS
-// Opens http(s) links (the GitHub link in About, and any links inside
-// rendered entry content) in the user's default browser instead of
-// navigating this app's own window away from itself. Uses the Tauri
-// "opener" plugin that's already configured on the Rust side, with a
-// plain window.open() fallback if that binding isn't available.
 // ============================================================
  
+// opens http(s) links (the GitHub) in the user's default browser instead of navigating this app's own window away from itself
 function ExternalLinks() {
+
+  // listener is used for the entire application -> if the user clicked on the URL link outside the app
   document.addEventListener("click", (event) => {
     const link = event.target.closest("a[href^='http://'], a[href^='https://']");
+    // if it was not an external link (local button), the function will end immediately
     if (!link) return;
  
     event.preventDefault();
  
+    // uses the Tauri "opener" plugin that's already configured on the Rust side
     const opener = window.__TAURI__ && window.__TAURI__.opener;
     if (opener && typeof opener.openUrl === "function") {
       opener.openUrl(link.href);
@@ -210,7 +191,7 @@ function ExternalLinks() {
       window.open(link.href, "_blank", "noopener,noreferrer");
     }
   });
-}*/
+}
 
 
 // ============================================================
@@ -230,25 +211,17 @@ function SidebarMovement() {
     });
   }
 };
-
-/*TODO: 
-// Starts with the sidebar collapsed on narrow viewports so the journal
-// content has room to breathe. The toggle button still works normally
-// from there in either direction.
-// Pokud je aplikace otevřená na malé obrazovce (šířka maximálně 768 px), při spuštění automaticky sbal postranní panel.
-// responsive design (mobila nebo úzká obrazovka)
+ 
+// if the app is open on a small screen, automatically collapse the sidebar on launch (responsive design = mobile or narrow screen)
 function CollapseSidebarOnSmallScreens() {
+
   const sidebar = document.getElementById("sidebar");
   if (sidebar && window.matchMedia("(max-width: 768px)").matches) {
     sidebar.classList.add("collapsed");
   }
-}*/
+}
 
-//-------------
-// ENDE FOR NOW (not much - need more time)
-//-------------
-
-// když se stiskne tlačítko, tak se předá do další funkce, která přepne stav active
+// when the button is pressed, it is passed to another function that switches the active state
 // single-page navigation: shows the requested view and hides the rest
 function ButtonsNavigation() {
   
@@ -269,18 +242,18 @@ function ButtonsNavigation() {
 
 // single-page navigation: shows the requested view and hides the rest
 // buttons functionality connection to other pages (SPA = single page application)
-function NavigateTo(viewId) {  // -> argument, který máme v HTML (data-target)
+function NavigateTo(viewId) {  // -> the argument we have in HTML (data-target)
  
-  // najde všechny elementy, který mají vlastnost = app-view (js je schopnej přepnout stránku podle ID)
+  // all the elements that have the property = app-view (js is able to switch the page by ID)
   const allselectors = document.querySelectorAll('.app-view');
 
-  // schování všech stránek napřed
+  // hide all the views first
   for (const view of allselectors)
   {
       view.classList.remove("active");
   }
 
-  // pak zobrazení jenom té, kterou chci já
+  // display only the one 
   const targetView = document.getElementById(viewId);
 
   if (targetView)
@@ -288,25 +261,88 @@ function NavigateTo(viewId) {  // -> argument, který máme v HTML (data-target)
       targetView.classList.add("active");
   }
 
-  // refresh uložených nodes
+  // refresh on main page
   if (viewId === "view-journal") {
     LoadAndRenderNotes();
   }
 }
 
+
+// ============================================================
+// OVERLAY HELPERS
+// -> better manipulation in app just throught keystrokes
+// ============================================================
+ 
+// element the user was on just before opening the overlay
+let lastFocusedElement = null;
+ 
+// overlay open + focus set
+function openOverlay(overlay, focusTarget) {
+
+  lastFocusedElement = document.activeElement;
+  overlay.classList.remove("hidden");
+  const target = focusTarget || overlay.querySelector("textarea, button, input");
+  if (target) target.focus();
+}
+ 
+// closing current overlay + return to last page
+function closeOverlay(overlay) {
+
+  overlay.classList.add("hidden");
+  if (lastFocusedElement) {
+    lastFocusedElement.focus();
+    lastFocusedElement = null;
+  }
+}
+ 
+
+// the ways in which the user can close the overlay (by clicking outside the overlay) = click-on-backdrop-to-close behavior
+function setupOverlayDismissal(overlay) {
+
+  overlay.addEventListener("click", (event) => {
+    if (event.target === overlay) {
+      closeOverlay(overlay);
+    }
+  });
+ 
+  // Esc keystroke 
+  overlay.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeOverlay(overlay);
+    }
+  });
+}
+
+// ============================================================
+// NEW ENTRY OVERLAY
+// ============================================================
+
 // another function bc overlay is not the same as page in SPA (opening and closing needs to be handle differently)
 function NodeOverlay() {
 
-  // rozdělím to na opening a closing button pro overlay
   const open_button = document.querySelector(".action-open-btn");
   const overlay = document.getElementById("node-overlay");
+  const content = document.getElementById("node-content");
+  const close_button = document.querySelector(".close-new-node-btn");
+  const add_button = document.querySelector(".add-node-btn");
 
-  open_button.addEventListener("click", function () {
-    overlay.classList.remove("hidden");
+  // background click check
+  setupOverlayDismissal(overlay);
+
+  open_button.addEventListener("click", () => {
+    openOverlay(overlay, content);
+  });
+
+  close_button.addEventListener("click", () => {
+  
+    closeOverlay(overlay);
+    document.getElementById("node-content").value = "";
+    contentDisplay.innerHTML = "<i>This is what your text will look like when you save it...</i>";
+    content.style.height = "";
+    contentDisplay.style.height = "";
   });
 
   // -------------------- MARKDOWN PREVIEW ----------------------
-  const content = document.getElementById("node-content");
   const contentDisplay = document.getElementById("node-content-preview");
 
   content.addEventListener("input", (e) => {
@@ -314,7 +350,7 @@ function NodeOverlay() {
     const query = e.target.value;
 
     if (query.trim() === "") {
-      contentDisplay.innerHTML = "<i>Takhle bude vypadat váš text, až ho uložíte...</i>";
+      contentDisplay.innerHTML = "<i>This is what your text will look like when you save it...</i>";
       return;
     }
     
@@ -326,48 +362,40 @@ function NodeOverlay() {
   });
 
   // ------------------- NODE ADD BUTTON PRESS -------------------
-  // all overlay buttons related functionality
-  const node_add = document.querySelector(".add-node-btn");
-
-  node_add.addEventListener("click", async function () {
+  add_button.addEventListener("click", async () => {
     
-    // vrátí se nám jenom filename + si vytáhneme data z elementu ()
+    // we want filename + extract data from element 
     const newNoteData = await invoke("new_note");
-    const content = document.getElementById("node-content").value;
 
-    // zapíšeme content z UI (return je bool)
+    // check 
+    if (!newFilename) {
+      showNotification("Couldn't create a new entry. Check that the app can write to disk.", "error");
+      return;
+    }
+
+    // write content from UI (return is bool)
     const odpoved = await invoke("insert_note", {
         filename: newNoteData,
-        content: content
+        content: content.value
     });
 
     if (!odpoved) {
-      showErrorNotification("Uložení poznámky selhalo! Zkontrolujte souborový systém.");
+      // leave the overlay open and the text in place so nothing the user wrote is lost 
+      showNotification("Saving the entry failed. Your text is still here - please try again.", "error");
+      return;
     }
 
-    // zavřít overlay a zaktualizovat UI 
-    const textarea = document.getElementById("node-content");
-    textarea.value = "";
-    contentDisplay.innerHTML = "<i>Takhle bude vypadat váš text, až ho uložíte...</i>";
+    // close the overlay and update the UI
+    content.value = "";
+    contentDisplay.innerHTML = "<i>This is what your text will look like when you save it...</i>";
     content.style.height = "";
     contentDisplay.style.height = "";
 
-    overlay.classList.add("hidden");
+    closeOverlay(overlay);
 
     // update main page with notes
     LoadAndRenderNotes();
     
-  });
-
-  // closing (in the future maybe duplicate due to add btn)
-  const close_button = document.querySelector(".close-new-node-btn");
-  
-  close_button.addEventListener("click", function () {
-    overlay.classList.add("hidden");
-    document.getElementById("node-content").value = "";
-    contentDisplay.innerHTML = "<i>Takhle bude vypadat váš text, až ho uložíte...</i>";
-    content.style.height = "";
-    contentDisplay.style.height = "";
   });
 }
 
@@ -378,15 +406,20 @@ function AutoOverlayAdjustment() {
 
   text_area.addEventListener("input", function() {
 
-    // first reset výšky na 'auto', aby se pole mohlo případně i zmenšit, když uživatel maže text
+    // first reset the height to 'auto' so that the field can eventually shrink when the user deletes text
     this.style.height = "auto";
     
-    // then set výšky podle skutečného obsahu + přičteme 2px kvůli borderu
+    // then set the height according to the actual content + add 2px for the border
     this.style.height = (this.scrollHeight + 2) + "px";
   });
 }
 
-// předvoj funkce na renderování poznámek na main 
+
+// ============================================================
+// LOADING AND RENDERING ENTRIES
+// ============================================================
+
+// fetches every entry from the backend and refreshes both the main list and the favorites sidebar from that single, authoritative result
 async function LoadAndRenderNotes() {
 
   // global var as list of nodes
@@ -396,44 +429,45 @@ async function LoadAndRenderNotes() {
   RenderFavoriteNotes(allLoadedNotes);
 }
 
-// 
+// renders the main journal list
 function RenderNotes(notesToRender, searchYesNoBool) {
 
-  // kontejner na main page + clean up
+  // container for main page + cleanup
   const container = document.getElementById("view-journal");
   if (!container) return;
 
   container.innerHTML = ""; 
   
-  // empty stav (první spuštění aplikace) -> custom stav
+  // empty state (first application launch) -> custom state
   if (notesToRender.length === 0 && searchYesNoBool == false){
     container.innerHTML = `
       <div class="empty-state">
         <div class="empty-icon">📝</div>
         <h2>Zatím tu nic není</h2>
-        <p>Klikni na <strong>+ New Journal</strong> v levém menu a napiš svoji první poznámku!</p>
+        <p>Click <strong>+ New Journal</strong> in the left menu and write your first note!</p>
       </div>
     `;
-    RenderFavoriteNotes(notesToRender);
     return;
   }
+  // no matching search results
   else if(notesToRender.length === 0 && searchYesNoBool == true){
     container.innerHTML = `
       <div class="empty-state">
         <div class="empty-icon">📝</div>
-        <p>Vaše vyhledávání je špatné, žádné záznamy nebyly nalezeny :(</p>
+        <p>Your search is wrong, no records were found :(</p>
       </div>
     `;
-    RenderFavoriteNotes(notesToRender);
     return;
   }
   
-  // vykreslení každé uložené poznámky
+  // render each saved note
   notesToRender.forEach((note) =>{
 
     const article = document.createElement("article");
     article.className = "entry";
-    // article.dataset.filename = note.filename;
+
+    // id for scrollIntoView() -> replacing all characters that are not allowed
+    article.id = note.filename.replace(/[^a-zA-Z0-9_-]/g, "");
 
     // HTML -> markdown formating transition
     const justHtml = marked.parse(note.content);
@@ -450,16 +484,17 @@ function RenderNotes(notesToRender, searchYesNoBool) {
         </div>
       </div>
       <div class="content">
-        <p class="note-text">${readyHtmlContent || "<i>Prázdná poznámka...</i>"}</p>
+        <p class="note-text">${readyHtmlContent || "<i>Empty Journal...</i>"}</p>
       </div>
     `;
 
+    // --- FAVORITE BUTTON ---
     const favBtn = article.querySelector('.btn-fav');
     favBtn.addEventListener('click', async function () {
       
       note.favorite = !note.favorite;
 
-      // animace hvězdičky, překliknutí hvězdičky
+      // star animation, star change
       if (note.favorite) {
         favBtn.classList.add('active');
         favBtn.textContent = '★';
@@ -468,39 +503,44 @@ function RenderNotes(notesToRender, searchYesNoBool) {
         favBtn.textContent = '☆';
       }
 
-      // update dat v souboru musí
-      await invoke("update_note",{ 
-        filename: note.filename, 
-        content: note.content, 
-        favorite: note.favorite 
-      });
+      // update data in file 
+      try {
+        await invoke("update_note", { 
+          filename: note.filename, 
+          content: note.content, 
+          favorite: note.favorite 
+        });
 
-      // napřed aktualizace dat a pak se sidebar překreslí s novými daty
-      const updatedNotes = await invoke("list_notes");
-      RenderFavoriteNotes(updatedNotes);
+        // first update the data and then redraw the sidebar with the new data
+        const updatedNotes = await invoke("list_notes");
+        RenderFavoriteNotes(updatedNotes);
+
+      } catch (error) {
+
+        // if the write fails (filesystem error), return 
+        note.favorite = !note.favorite;
+        favBtn.classList.toggle('active', note.favorite);
+        favBtn.textContent = note.favorite ? '★' : '☆';
+        showNotification("Couldn't update favorites. Please try again.", "error");
+        return;
+      }
     });
 
-    // přidáme na stránku
-    container.appendChild(article);
-
-    // node editing part
+    // --- EDIT BUTTON ---
     const editBtn = article.querySelector('.btn-edit');
       
     editBtn.addEventListener("click", function () {
 
-      // uložení aktuální poznámky do global variables
+      // save current note to global variables
       currentEditingFilename = note.filename;
       currentEditingFavorite = note.favorite;
 
-      // otevřeme overlay a vložíme do textarey text této poznámky
+      // open the overlay and insert the text of this note into the textarea
       document.getElementById("edit-node-content").value = note.content;
       document.getElementById("detail-content-overlay").classList.remove("hidden");
     });
 
-    // přidáme na stránku
-    container.appendChild(article);
-
-    // node editing part
+    // --- DELETE BUTTON ---
     const deleteBtn = article.querySelector('.btn-delete');
       
     deleteBtn.addEventListener("click", function () {
@@ -511,16 +551,28 @@ function RenderNotes(notesToRender, searchYesNoBool) {
       document.getElementById("delete-content-overlay").classList.remove("hidden");
     });
 
-    // přidáme na stránku
+    // add all the changes to the main page
     container.appendChild(article);
   });
 
-  // počáteční vykreslení sidebaru při načtení aplikace
-  RenderFavoriteNotes(notesToRender);
+  // initial rendering of the sidebar when the application loads
+  RenderFavoriteNotes(allLoadedNotes);
 }
 
+// reduces Markdown source to plain text for the one-line sidebar preview (rendering it through the same pipeline used for the full entry)
+// preview can never show headings and bold text (result come out as plain words)
+function toPlainTextPreview(markdownContent) {
 
-// LOGIC for favorite (on the side) -> separátní funkce, protože nechci tu funkcionalitu kombinovat až moc
+  if (!markdownContent) return "";
+  const safeHtml = DOMPurify.sanitize(marked.parse(markdownContent));
+  // helper container (temporary storage)
+  const scratch = document.createElement("div");
+  scratch.innerHTML = safeHtml;
+  // transition HTML into plain text
+  return scratch.textContent.replace(/\s+/g, " ").trim();
+}
+ 
+// renders the "Favorite Entries" list in the sidebar
 function RenderFavoriteNotes(allNotes) {
   
   const kontajnerus = document.getElementById("note-list");
@@ -528,45 +580,72 @@ function RenderFavoriteNotes(allNotes) {
 
   kontajnerus.innerHTML = ""; 
 
-  // filtrace
+  // filtration
   const favoriteNotes = allNotes.filter(note => note.favorite === true);
 
-  // empty seznam
+  // empty list
   if (favoriteNotes.length === 0) {
     kontajnerus.innerHTML = `
       <div class="note-item empty">
-        <div class="note-item-preview" style="color: #b5b1b1; font-style: italic;">Žádné oblíbené poznámky...</div>
+        <div class="note-item-preview" style="color: #b5b1b1; font-style: italic;">No favorite entries yet.</div>
       </div>
     `;
     return;
   }
 
-  // func pozn: allignment bude fungovat, protože tady nám to uřízne v css díky je overflow: hidden a text-overflow: ellipsis
+  // function note: alignment will work because it cuts off here in CSS thanks to overflow: hidden and text-overflow: ellipsis
 
   favoriteNotes.forEach((note) =>{
 
     const div = document.createElement("div");
-    div.className = "note-item"; 
-    
+    div.className = "note-item";
+
     div.innerHTML = `
-      <div class="note-item-preview">${note.content || "<i>Prázdná poznámka...</i>"}</div>
+      <div class="note-item-preview">${toPlainTextPreview(note.content) || "<i>Empty Journal...</i>"}</div>
     `;
+ 
+    div.addEventListener("click", () => {
+      
+      NavigateTo("view-journal");
+      // again create same id as before 
+      const safeId = note.filename.replace(/[^a-zA-Z0-9_-]/g, "");
+      
+      const noteElement = document.getElementById(safeId);
+      
+      if (noteElement) {
+
+        // scroll smoothly to the element
+        noteElement.scrollIntoView({ 
+          behavior: "smooth", 
+          block: "start"     
+        });
+
+        noteElement.style.transition = "background-color 0.5s ease";
+        noteElement.style.backgroundColor = "rgba(255, 255, 0, 0.3)"; 
+        
+        setTimeout(() => {
+          noteElement.style.backgroundColor = ""; 
+        }, 1500);
+      }
+    });
 
     kontajnerus.appendChild(div);
   });
 }
 
-// func. segment = původně jsem volal tuto funkci z foreach cyklu a addEventListener (přidání posluchače události) jsem dal ke každé poznámce (ale takhle by vznikl deadlock -> zárva)
-//                 takže jeden overlay, jeden exit a save tlačítko se volá pokaždé jen jednou
-//                 nebudeme si komplikovat život, prostě přes klikání na edit tlačítko se bude otevírat a hotovo, nic víc    
 
+// ============================================================
+// EDIT ENTRY OVERLAY
+// ============================================================
 
-// another overlay for closer look (edit) at specific node 
 function EditOverlay(){
 
   const overlay = document.getElementById("detail-content-overlay");
   const closeBtn = document.getElementById("close-detail-node");
   const saveBtn = document.getElementById("save-node");
+  const textarea = document.getElementById("edit-node-content");
+
+  setupOverlayDismissal(overlay);
 
   closeBtn.addEventListener("click", function () {
       overlay.classList.add("hidden");
@@ -574,44 +653,47 @@ function EditOverlay(){
 
   saveBtn.addEventListener("click", async function () {
     
-    const kontetos = document.getElementById("edit-node-content").value;
-
     // different error handling attempt
     try {
         await invoke("update_note", { 
             filename: currentEditingFilename, 
-            content: kontetos, 
+            content: textarea.value,
             favorite: currentEditingFavorite 
         });
 
-        document.getElementById("edit-node-content").value = "";
-        // overlay.classList.add("hidden");
+        if (!saved) {
+          showNotification("Saving your changes failed. Please try again.", "error");
+          return;
+        }
+
+        textarea.value = "";
+        closeOverlay(overlay);
         LoadAndRenderNotes();
         
     } catch (error) {
-        console.error("Chyba při ukládání:", error);
+      showNotification("Saving your changes failed. Please try again.", "error");
     }
-
-    // zavření
-    overlay.classList.add("hidden");
-  
   });
 }
 
-// node deletion
+// ============================================================
+// DELETE ENTRY OVERLAY
+// ============================================================
+
 function DeleteOverlay() {
 
   const overlay = document.getElementById("delete-content-overlay");
   const yesBtn = document.getElementById("yes-btn-node");
   const noBtn = document.getElementById("no-btn-node");
 
+  setupOverlayDismissal(overlay);
+
   noBtn.addEventListener("click", function () {
-      overlay.classList.add("hidden");
+      closeOverlay(overlay);
   });
 
   yesBtn.addEventListener("click", async function () {
 
-    // different error handling attempt
     try {
 
       const isDeleted = await invoke("delete_note", { 
@@ -620,20 +702,24 @@ function DeleteOverlay() {
 
       if (isDeleted) {
         
-        overlay.classList.add("hidden");
+        closeOverlay(overlay);
         LoadAndRenderNotes();
       } 
       else {
-        console.error("Nepodařilo se smazat soubor.");
+        showNotification("Couldn't delete this entry. Please try again.", "error");
       }
+
     } catch (error) {
-      console.error("Chyba při mazání:", error);
+      showNotification("Couldn't delete this entry. Please try again.", "error");
     }
 
   });
 }
 
-// search fun (sranda)
+// ============================================================
+// SEARCH
+// ============================================================
+
 function SearchFunctionality() {
 
   const btnSearch = document.getElementById("btn-search");
@@ -683,19 +769,24 @@ function SearchFunctionality() {
   });
 }
 
+
+// ============================================================
+// FEEDBACK FORM
+// ============================================================
+
 function FeedbackSend(){
   
   const form = document.getElementById('feedback-form');
 
   form.addEventListener('submit', async function(event) {
     
-    // zábrana tomu, aby se stránka načetla znovu
+    // prevent the page from reloading
     event.preventDefault(); 
     
-    // get data z formuláře
+    // get data from the form
     const data = new FormData(event.target);
     
-    // odeslat data
+    // send data
     fetch(event.target.action, {
       method: form.method,
       body: data,
@@ -706,15 +797,15 @@ function FeedbackSend(){
 
       if (response.ok) {
 
-        alert("Díky za feedback! Ozveme se brzy."); 
+        showNotification("Thanks for the feedback! We'll get back to you if you left an email.", "success");
         form.reset();
         document.getElementById('close-feedback').click(); 
       } else {
 
-        alert("Jejda, něco se pokazilo při odesílání.");
+        showNotification("Something went wrong while sending your feedback. Please try again.", "error");
       }
     }).catch(error => {
-      alert("Problém s připojením.");
+      showNotification("Couldn't reach the feedback server. Check your internet connection.", "error");
     });
   });
 }

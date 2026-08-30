@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
   FeedbackSend();
   ExternalLinks();
   Notifications();
-  
+
   // loading nodes immediately after app launch
   LoadAndRenderNotes();
 });
@@ -126,7 +126,7 @@ function SettingsFunctionality() {
       localStorage.removeItem("app-font-size");
       localStorage.removeItem("app-font");
       LoadSavedSettings();
-      showNotification("Settings restored to defaults.", "success");
+      showNotification("Settings restored to defaults", "success");
     });
   }
 }
@@ -325,32 +325,34 @@ function NodeOverlay() {
   const content = document.getElementById("node-content");
   const close_button = document.querySelector(".close-new-node-btn");
   const add_button = document.querySelector(".add-node-btn");
+  const contentDisplay = document.getElementById("node-content-preview");
 
   // background click check
   setupOverlayDismissal(overlay);
 
   open_button.addEventListener("click", () => {
+
+    // clearing content before the window is shown
+    document.getElementById("node-content").value = "";
+    contentDisplay.innerHTML = "<i>Your entry text after insertion...</i>";
+    content.style.height = "";
+    contentDisplay.style.height = "";
+
     openOverlay(overlay, content);
   });
 
   close_button.addEventListener("click", () => {
   
     closeOverlay(overlay);
-    document.getElementById("node-content").value = "";
-    contentDisplay.innerHTML = "<i>This is what your text will look like when you save it...</i>";
-    content.style.height = "";
-    contentDisplay.style.height = "";
   });
 
   // -------------------- MARKDOWN PREVIEW ----------------------
-  const contentDisplay = document.getElementById("node-content-preview");
-
   content.addEventListener("input", (e) => {
 
     const query = e.target.value;
 
     if (query.trim() === "") {
-      contentDisplay.innerHTML = "<i>This is what your text will look like when you save it...</i>";
+      contentDisplay.innerHTML = "<i>Your entry text after insertion...</i>";
       return;
     }
     
@@ -364,39 +366,36 @@ function NodeOverlay() {
   // ------------------- NODE ADD BUTTON PRESS -------------------
   add_button.addEventListener("click", async () => {
     
-    // we want filename + extract data from element 
-    const newNoteData = await invoke("new_note");
+    try {
+      // we want filename + extract data from element (return je result || string = error)
+      const newNoteData = await invoke("new_note");
 
-    // check 
-    if (!newFilename) {
-      showNotification("Couldn't create a new entry. Check that the app can write to disk.", "error");
-      return;
-    }
+      // check 
+      if (!newNoteData) {
+        showNotification("Couldn't create a new entry. Check that the app can write to disk", "error");
+        return;
+      }
 
-    // write content from UI (return is bool)
-    const odpoved = await invoke("insert_note", {
+      // ff Rust returns Ok(()), the code continues normally on the next line
+      // ff Rust returns Err("error"), the code immediately jumps to the `catch` block
+      await invoke("insert_note", {
         filename: newNoteData,
         content: content.value
-    });
+      });
 
-    if (!odpoved) {
-      // leave the overlay open and the text in place so nothing the user wrote is lost 
-      showNotification("Saving the entry failed. Your text is still here - please try again.", "error");
-      return;
-    }
+      closeOverlay(overlay);
 
-    // close the overlay and update the UI
-    content.value = "";
-    contentDisplay.innerHTML = "<i>This is what your text will look like when you save it...</i>";
-    content.style.height = "";
-    contentDisplay.style.height = "";
-
-    closeOverlay(overlay);
-
-    // update main page with notes
-    LoadAndRenderNotes();
+      // update main page with notes
+      LoadAndRenderNotes();
     
-  });
+    } catch (error) {
+    // string you defined in Rust in Err(...) is captured
+    showNotification(`Saving the entry failed: ${error}`, "error");
+    
+    // the overlay will remain open so the user doesn't lose the text
+  }
+});
+    
 }
 
 // function for allignment adjustment during node inserting (automatic)
@@ -521,7 +520,7 @@ function RenderNotes(notesToRender, searchYesNoBool) {
         note.favorite = !note.favorite;
         favBtn.classList.toggle('active', note.favorite);
         favBtn.textContent = note.favorite ? '★' : '☆';
-        showNotification("Couldn't update favorites. Please try again.", "error");
+        showNotification("Couldn't update favorites. Please try again", "error");
         return;
       }
     });
@@ -661,17 +660,12 @@ function EditOverlay(){
             favorite: currentEditingFavorite 
         });
 
-        if (!saved) {
-          showNotification("Saving your changes failed. Please try again.", "error");
-          return;
-        }
-
         textarea.value = "";
         closeOverlay(overlay);
         LoadAndRenderNotes();
         
     } catch (error) {
-      showNotification("Saving your changes failed. Please try again.", "error");
+      showNotification("Saving your changes failed. Please try again", "error");
     }
   });
 }
@@ -696,21 +690,15 @@ function DeleteOverlay() {
 
     try {
 
-      const isDeleted = await invoke("delete_note", { 
+      await invoke("delete_note", { 
         filename: currentDeletingFilename 
       });
 
-      if (isDeleted) {
-        
-        closeOverlay(overlay);
-        LoadAndRenderNotes();
-      } 
-      else {
-        showNotification("Couldn't delete this entry. Please try again.", "error");
-      }
+      closeOverlay(overlay);
+      LoadAndRenderNotes();
 
     } catch (error) {
-      showNotification("Couldn't delete this entry. Please try again.", "error");
+      showNotification("Couldn't delete this entry. Please try again", "error");
     }
 
   });
@@ -797,15 +785,15 @@ function FeedbackSend(){
 
       if (response.ok) {
 
-        showNotification("Thanks for the feedback! We'll get back to you if you left an email.", "success");
+        showNotification("Thanks for the feedback!", "success");
         form.reset();
         document.getElementById('close-feedback').click(); 
       } else {
 
-        showNotification("Something went wrong while sending your feedback. Please try again.", "error");
+        showNotification("Something went wrong while sending your feedback. Please try again", "error");
       }
     }).catch(error => {
-      showNotification("Couldn't reach the feedback server. Check your internet connection.", "error");
+      showNotification("Couldn't reach the feedback server. Check your internet connection", "error");
     });
   });
 }

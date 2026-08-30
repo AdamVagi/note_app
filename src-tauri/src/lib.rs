@@ -29,6 +29,7 @@ A file starts with a small `---`and then metadata header (filename, creation dat
 --- 
 filename: 2026-08-20_aB3dE9fG2h.md
 date: 2026-08-20
+updated_at: 18:50
 favorite: false
 ---
 The actual entry text goes here
@@ -47,6 +48,7 @@ struct NoteData {
     // pub -> public
     pub filename: String,          // doing sort by name + search
     pub date: String,              // need to print the date on frontend
+    pub updated_at: String, 
     pub content: String,   
     pub favorite: bool,     
 }
@@ -86,7 +88,7 @@ fn notes_dir(app: &tauri::AppHandle) -> Result<PathBuf, String> {
     fs::create_dir_all(&path).map_err(|e| format!("Could not create the notes directory: {e}"))?;
 
     // custom print (path k .md filům)
-    println!(">>> CESTA K POZNÁMKÁM: {:?} <<<", path);
+    // println!(">>> CESTA K POZNÁMKÁM: {:?} <<<", path);
     
     Ok(path)
 }
@@ -117,7 +119,7 @@ fn is_safe_note_filename(filename: &str) -> bool {
 }
 
 // parses a note file's content into (filename, date, body, favorite)
-fn parse_markdown_file(content: &str) -> (String, String, String, bool) {
+fn parse_markdown_file(content: &str) -> (String, String, String, String, bool) {
 
     // split by --- into 3 parts and save to the list of parts of the text (&str)
     let parts: Vec<&str> = content.splitn(3, "---").collect();
@@ -125,6 +127,7 @@ fn parse_markdown_file(content: &str) -> (String, String, String, bool) {
     // preventive control (do we have all parts in the file ??)
     if parts.len() < 3 {
         return (
+            String::new(),
             String::new(),
             String::new(),
             content.to_string(),
@@ -138,6 +141,7 @@ fn parse_markdown_file(content: &str) -> (String, String, String, bool) {
 
     let mut filename = String::new();
     let mut date = String::new();
+    let mut updated_at: String = String::new();
     // default false
     let mut favorite = false;
 
@@ -151,6 +155,10 @@ fn parse_markdown_file(content: &str) -> (String, String, String, bool) {
             date = line.replace("date:", "").trim().to_string();
         }
 
+        if line.starts_with("updated_at:") {
+            updated_at = line.replace("updated_at:", "").trim().to_string();
+        }
+
         if line.starts_with("favorite:") {
             let value = line.replace("favorite:", "").trim().to_string();
 
@@ -160,7 +168,7 @@ fn parse_markdown_file(content: &str) -> (String, String, String, bool) {
         }
     }
 
-    return (filename, date, body, favorite);
+    return (filename, date, updated_at, body, favorite);
 }
 
 
@@ -177,6 +185,7 @@ fn new_note(app: tauri::AppHandle) -> Result<String, String>{
     let now = chrono::Local::now();
 
     let date_string = now.format("%Y-%m-%d").to_string();
+    let hour_string = now.format("%H:%M").to_string();
 
     let random_id = random_string(10);
     let result = format!("{}_{}", date_string, random_id);
@@ -188,8 +197,8 @@ fn new_note(app: tauri::AppHandle) -> Result<String, String>{
 
     // insert header s metadaty
     let initial_file_content = format!(
-        "---\nfilename: {}\ndate: {}\nfavorite: {}\n---\n",
-        filename, date_string, false
+        "---\nfilename: {}\ndate: {}\nupdated_at: {}\nfavorite: {}\n---\n",
+        filename, date_string, hour_string, false
     );
 
     // insert an empty note with a header
@@ -217,16 +226,20 @@ fn insert_note(app: tauri::AppHandle, filename: String, content: String) -> Resu
         .map_err(|e| format!("Failed to read file for editing: {e}"))?;
 
     // only need to extract filename bc we already have content (+ return date and favorite will always be false)
-    let (_, date, _, _) = parse_markdown_file(&existing_content);
+    let (_, date, _, _, _) = parse_markdown_file(&existing_content);
 
     if date.is_empty() { 
         return Err("The date in the original note is empty".to_string()); 
     }
 
+    // new current time during file update
+    let now = chrono::Local::now();
+    let new_updated_at = now.format("%H:%M").to_string();
+
     // znovu to složíme dohromady, ale s novým contentem z UI
     let full_text = format!(
-        "---\nfilename: {}\ndate: {}\nfavorite: {}\n---\n{}",
-        filename, date, false, content
+        "---\nfilename: {}\ndate: {}\nupdated_at: {}\nfavorite: {}\n---\n{}",
+        filename, date, new_updated_at, false, content
     );
 
     fs::write(&path, full_text)
@@ -264,10 +277,14 @@ fn update_note(app: tauri::AppHandle, filename: String, content: String, favorit
     let existing_content = std::fs::read_to_string(&path)
         .map_err(|e| format!("Failed to read note for its update: {e}"))?;
 
-    let (filename, date, _, _) = parse_markdown_file(&existing_content);
-        
+    let (filename, date, _, _, _) = parse_markdown_file(&existing_content);
+
+    // new current time during file update
+    let now = chrono::Local::now();
+    let new_updated_at = now.format("%H:%M").to_string();
+         
     // compose back with new content and new favorite state
-    let full_text = format!("---\nfilename: {}\ndate: {}\nfavorite: {}\n---\n{}", filename, date, favorite, content);
+    let full_text = format!("---\nfilename: {}\ndate: {}\nupdated_at: {}\nfavorite: {}\n---\n{}", filename, date, new_updated_at, favorite, content);
 
     std::fs::write(path, full_text)
         .map_err(|e| format!("Failed to update: {e}"))?;
@@ -310,15 +327,20 @@ fn list_notes(app: tauri::AppHandle) -> Result<Vec<NoteData>, String> {
             Err(_) => continue,
         };
 
+        
+
         // select values ​​+ insert into struct
-        let (filename, date, content, favorite) = parse_markdown_file(&file_content);
-        let note = NoteData { filename, date, content, favorite,};
+        let (filename, date, updated_at, content, favorite) = parse_markdown_file(&file_content);
+        let note = NoteData { filename, date, updated_at, content, favorite,};
 
         notes.push(note);
     }
 
-    // sort by date added descending    
-    notes.sort_by(|a, b| b.date.cmp(&a.date));
+    // sort by date added + update time at each day (the newest is need to be on the top of the page)   
+    notes.sort_by(|a, b| {
+        b.date.cmp(&a.date)
+            .then_with(|| b.updated_at.cmp(&a.updated_at))
+    });
     Ok(notes)
 
 }

@@ -1,6 +1,6 @@
 # Journal
 
-A simple yet powerful note-taking app (notepad) that focuses on fast text storage and processing using Markdown.
+A simple yet powerful local-first journaling app for fast, private note-taking and text processing using plain Markdown files — no account, no cloud, just your thoughts stored safely on your own machine.
 
 ## 🚀 Features
 

@@ -1,3 +1,6 @@
+// import language translation (functions) module from i18n.js 
+import { t, getLanguage, setLanguage, applyStaticTranslations } from "./i18n.js";
+
 // invoke() -> connection between frontend (JavaScript) calls and backend (Rust) commands
 const { invoke } = window.__TAURI__.core;
 
@@ -9,6 +12,9 @@ marked.setOptions({ breaks: true, gfm: true });
 // APP INITIALIZATION (main)
 // ======================================================
 document.addEventListener("DOMContentLoaded", () => {
+
+  document.documentElement.setAttribute("lang", getLanguage());
+  applyStaticTranslations();
   
   LoadSavedSettings();
 
@@ -62,6 +68,7 @@ function LoadSavedSettings() {
   const themeToggle = document.getElementById("theme-toggle");
   const fontSizeSlider = document.getElementById("font-size");
   const fontSelect = document.getElementById("font-family");
+  const languageSelect = document.getElementById("language-select");
 
   // sync
   if (themeToggle) {
@@ -72,6 +79,9 @@ function LoadSavedSettings() {
   }
   if (fontSelect) {
     fontSelect.value = savedFont;
+  }
+  if (languageSelect) {
+    languageSelect.value = getLanguage();
   }
 }
 
@@ -116,6 +126,17 @@ function SettingsFunctionality() {
     });
   }
 
+  const languageSelect = document.getElementById("language-select");
+  if (languageSelect) {
+    languageSelect.addEventListener("change", (e) => {
+
+      // Static HTML is already retranslated by setLanguage()
+      // Anything main.js that generated dynamically (entry cards, favorites sidebar) is created in render time, so it needs a fresh render to change language too
+      setLanguage(e.target.value);
+      LoadAndRenderNotes();
+    });
+  }
+
   // reset button
   const resetButton = document.getElementById("btn-reset-settings");
   if (resetButton) {
@@ -125,8 +146,10 @@ function SettingsFunctionality() {
       localStorage.removeItem("app-theme");
       localStorage.removeItem("app-font-size");
       localStorage.removeItem("app-font");
+      localStorage.removeItem("app-language");
+      setLanguage("en");
       LoadSavedSettings();
-      showNotification("Settings restored to defaults", "success");
+      showNotification(t("reset_toast"), "success");
     });
   }
 }
@@ -211,15 +234,6 @@ function SidebarMovement() {
     });
   }
 };
- 
-// if the app is open on a small screen, automatically collapse the sidebar on launch (responsive design = mobile or narrow screen)
-function CollapseSidebarOnSmallScreens() {
-
-  const sidebar = document.getElementById("sidebar");
-  if (sidebar && window.matchMedia("(max-width: 768px)").matches) {
-    sidebar.classList.add("collapsed");
-  }
-}
 
 // when the button is pressed, it is passed to another function that switches the active state
 // single-page navigation: shows the requested view and hides the rest
@@ -334,7 +348,7 @@ function NodeOverlay() {
 
     // clearing content before the window is shown
     document.getElementById("node-content").value = "";
-    contentDisplay.innerHTML = "<i>Your entry text after insertion...</i>";
+    contentDisplay.innerHTML = `<i>${t('new_entry_hint')}</i>`;
     content.style.height = "";
     contentDisplay.style.height = "";
 
@@ -352,7 +366,7 @@ function NodeOverlay() {
     const query = e.target.value;
 
     if (query.trim() === "") {
-      contentDisplay.innerHTML = "<i>Your entry text after insertion...</i>";
+      contentDisplay.innerHTML = `<i>${t("new_entry_hint")}</i>`;
       return;
     }
     
@@ -372,7 +386,7 @@ function NodeOverlay() {
 
       // check 
       if (!newNoteData) {
-        showNotification("Couldn't create a new entry. Check that the app can write to disk", "error");
+        showNotification(t("new_entry_create_error_toast"), "error");
         return;
       }
 
@@ -390,7 +404,7 @@ function NodeOverlay() {
     
     } catch (error) {
     // string you defined in Rust in Err(...) is captured
-    showNotification(`Saving the entry failed: ${error}`, "error");
+    showNotification(t("new_entry_save_error_toast"), "error");
     
     // the overlay will remain open so the user doesn't lose the text
   }
@@ -443,7 +457,8 @@ function RenderNotes(notesToRender, searchYesNoBool) {
       <div class="empty-state">
         <div class="empty-icon">📝</div>
         <h2>Zatím tu nic není</h2>
-        <p>Click <strong>+ New Journal</strong> in the left menu and write your first note!</p>
+        <h2>${t("empty_no_entries_heading")}</h2>
+        <p>${t("empty_no_entries_body")}</p>
       </div>
     `;
     return;
@@ -453,7 +468,7 @@ function RenderNotes(notesToRender, searchYesNoBool) {
     container.innerHTML = `
       <div class="empty-state">
         <div class="empty-icon">📝</div>
-        <p>Your search is wrong, no records were found :(</p>
+        <p>${t("empty_no_search_results")}</p>
       </div>
     `;
     return;
@@ -478,12 +493,12 @@ function RenderNotes(notesToRender, searchYesNoBool) {
         <div class="date">${note.date}</div>
         <div class="entry-actions">
           <button class="btn-fav ${note.favorite ? 'active' : ''}">${note.favorite ? '★' : '☆'}</button>
-          <button class="btn-edit" title="Edit node">✏️</button>
-          <button class="btn-delete" title="Delete node">🗑️</button>
+          <button class="btn-edit" title="${t('entry_edit_title')}">✏️</button>
+          <button class="btn-delete" title="${t('entry_delete_title')}">🗑️</button>
         </div>
       </div>
       <div class="content">
-        <p class="note-text">${readyHtmlContent || "<i>Empty Journal...</i>"}</p>
+        <p class="note-text">${readyHtmlContent || `<i>${t("empty_entry")}</i>`}</p>
       </div>
     `;
 
@@ -520,7 +535,7 @@ function RenderNotes(notesToRender, searchYesNoBool) {
         note.favorite = !note.favorite;
         favBtn.classList.toggle('active', note.favorite);
         favBtn.textContent = note.favorite ? '★' : '☆';
-        showNotification("Couldn't update favorites. Please try again", "error");
+        showNotification(t("favorite_toggle_error_toast"), "error");
         return;
       }
     });
@@ -586,7 +601,7 @@ function RenderFavoriteNotes(allNotes) {
   if (favoriteNotes.length === 0) {
     kontajnerus.innerHTML = `
       <div class="note-item empty">
-        <div class="note-item-preview" style="color: #b5b1b1; font-style: italic;">No favorite entries yet.</div>
+        <div class="note-item-preview" style="color: #b5b1b1; font-style: italic;">${t("favorites_empty")}</div>
       </div>
     `;
     return;
@@ -600,7 +615,7 @@ function RenderFavoriteNotes(allNotes) {
     div.className = "note-item";
 
     div.innerHTML = `
-      <div class="note-item-preview">${toPlainTextPreview(note.content) || "<i>Empty Journal...</i>"}</div>
+      <div class="note-item-preview">${toPlainTextPreview(note.content) || `<i>${t("empty_entry")}</i>`}</p>
     `;
  
     div.addEventListener("click", () => {
@@ -665,7 +680,7 @@ function EditOverlay(){
         LoadAndRenderNotes();
         
     } catch (error) {
-      showNotification("Saving your changes failed. Please try again", "error");
+      showNotification(t("edit_save_error_toast"), "error");
     }
   });
 }
@@ -698,7 +713,7 @@ function DeleteOverlay() {
       LoadAndRenderNotes();
 
     } catch (error) {
-      showNotification("Couldn't delete this entry. Please try again", "error");
+      showNotification(t("delete_error_toast"), "error");
     }
 
   });
@@ -785,15 +800,15 @@ function FeedbackSend(){
 
       if (response.ok) {
 
-        showNotification("Thanks for the feedback!", "success");
+        showNotification(t("feedback_success_toast"), "success");
         form.reset();
         document.getElementById('close-feedback').click(); 
       } else {
 
-        showNotification("Something went wrong while sending your feedback. Please try again", "error");
+        showNotification(t("feedback_error_toast"), "error");
       }
     }).catch(error => {
-      showNotification("Couldn't reach the feedback server. Check your internet connection", "error");
+      showNotification(t("feedback_network_error_toast"), "error");
     });
   });
 }

@@ -7,7 +7,7 @@
 
 @font-face {
   font-family: 'Rajdhani';
-  src: url('../src-tauri/fonts/Rajdhani-Regular.ttf') format('truetype'); 
+  src: url('./assets/fonts/Rajdhani-SemiBold.ttf') format('truetype'); 
   font-weight: 400; 
   font-style: normal;
 }
@@ -141,6 +141,8 @@ body {
 /* closed sidebar */
 .sidebar.collapsed {
     width: 64px;
+    min-width: 64px; 
+    flex-shrink: 0;
 }
  
 .sidebar-header {

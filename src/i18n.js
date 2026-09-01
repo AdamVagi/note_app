@@ -121,6 +121,23 @@ export const translations = {
     empty_no_entries_heading: "Nothing here yet",
     empty_no_entries_body: "Click <strong>+ New Journal</strong> in the left menu and write your first note!",
     empty_no_search_results: "No entries match your search.",
+
+    // success toasts for actions whose result isn't obvious enough on its own 
+    new_entry_created_toast: "Entry created.",
+    edit_entry_saved_toast: "Entry saved.",
+    delete_entry_deleted_toast: "Entry deleted.",
+ 
+    /* TODO: tohle je ještě diskutabilní zatím (ještě nevím, kam přesně to dám)
+    // Keyboard shortcuts (Settings panel). Only the description translates -
+    // the key combo itself (N, F, S, Enter, etc.) is language-independent
+    // and is built directly in JS as <kbd> elements.
+    shortcuts_heading: "Keyboard Shortcuts",
+    shortcuts_or: "or",
+    shortcuts_new_entry_desc: "New entry",
+    shortcuts_search_desc: "Search",
+    shortcuts_save_desc: "Save",
+    shortcuts_close_desc: "Close dialog",
+    shortcuts_settings_desc: "Open settings",*/
   },
  
   cs: {
@@ -228,6 +245,20 @@ export const translations = {
     empty_no_entries_heading: "Zatím tu nic není",
     empty_no_entries_body: "Klikněte na <strong>+ Nový zápis</strong> a napište svou první poznámku!",
     empty_no_search_results: "Žádné záznamy neodpovídají vašemu hledání.",
+
+    // more success toast messages  
+    new_entry_created_toast: "Záznam byl vytvořen.",
+    edit_entry_saved_toast: "Záznam byl uložen.",
+    delete_entry_deleted_toast: "Záznam byl smazán.",
+ 
+    /* TODO: diskutabilní czech version
+    shortcuts_heading: "Klávesové zkratky",
+    shortcuts_or: "nebo",
+    shortcuts_new_entry_desc: "Nový záznam",
+    shortcuts_search_desc: "Hledat",
+    shortcuts_save_desc: "Uložit",
+    shortcuts_close_desc: "Zavřít dialog",
+    shortcuts_settings_desc: "Otevřít nastavení",*/
   },
 };
 

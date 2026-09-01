@@ -355,6 +355,21 @@ function NodeOverlay() {
     openOverlay(overlay, content);
   });
 
+  // ctrl/cmd+n keyword shortcut
+  content.addEventListener("keydown", (event) => {
+    
+    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "n") {
+
+      // clearing content before the window is shown
+      document.getElementById("node-content").value = "";
+      contentDisplay.innerHTML = `<i>${t('new_entry_hint')}</i>`;
+      content.style.height = "";
+      contentDisplay.style.height = "";
+
+      openOverlay(overlay, content);
+    }
+  });
+
   close_button.addEventListener("click", () => {
   
     closeOverlay(overlay);
@@ -377,10 +392,33 @@ function NodeOverlay() {
     contentDisplay.innerHTML = readyHtmlContent;
   });
 
+
   // ------------------- NODE ADD BUTTON PRESS -------------------
-  add_button.addEventListener("click", async () => {
-    
-    try {
+  add_button.addEventListener("click", submitNewEntry);
+
+
+  // ------------------- NODE ADD KEYBOARD SHORTCUT -------------------
+  // Ctrl/Cmd+Enter saves + EXIT the textarea, Ctrl/Cmd+S handle this situation the exact same way (calls same function below)
+  content.addEventListener("keydown", (event) => {
+
+    if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
+      event.preventDefault();
+      submitNewEntry();
+    }
+
+    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "s") {
+      event.preventDefault();
+      submitNewEntry();
+    }
+  });
+}
+
+// creates the note file, writes the typed content to it, and closes the page on success
+// called from the "Add Entry" button or Ctrl/Cmd+Enter or Ctrl/Cmd+S (must by async)
+async function submitNewEntry() {
+  const overlay = document.getElementById("node-overlay");
+
+  try {
       // we want filename + extract data from element (return je result || string = error)
       const newNoteData = await invoke("new_note");
 
@@ -398,6 +436,7 @@ function NodeOverlay() {
       });
 
       closeOverlay(overlay);
+      showNotification(t("new_entry_created_toast"), "success");
 
       // update main page with notes
       LoadAndRenderNotes();
@@ -408,8 +447,6 @@ function NodeOverlay() {
     
     // the overlay will remain open so the user doesn't lose the text
   }
-});
-    
 }
 
 // function for allignment adjustment during node inserting (automatic)
@@ -665,25 +702,51 @@ function EditOverlay(){
       overlay.classList.add("hidden");
   });
 
-  saveBtn.addEventListener("click", async function () {
-    
-    // different error handling attempt
-    try {
-        await invoke("update_note", { 
-            filename: currentEditingFilename, 
-            content: textarea.value,
-            favorite: currentEditingFavorite 
-        });
 
-        textarea.value = "";
-        closeOverlay(overlay);
-        LoadAndRenderNotes();
-        
-    } catch (error) {
-      showNotification(t("edit_save_error_toast"), "error");
+  // ------------------- NODE EDIT BY BUTTON -------------------
+  saveBtn.addEventListener("click", submitEditedEntry);
+
+
+  // ------------------- NODE EDIT KEYBOARD SHORTCUT -------------------
+  // Ctrl/Cmd+Enter saves + EXIT the textarea, Ctrl/Cmd+S handle this situation the exact same way (calls same function below)
+  textarea.addEventListener("keydown", (event) => {
+
+    if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
+      event.preventDefault();
+      submitEditedEntry();
+    }
+
+    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "s") {
+      event.preventDefault();
+      submitEditedEntry();
     }
   });
 }
+
+// saves changes to whichever entry is currently open for editing
+// called from the "Save Entry" button or Ctrl/Cmd+Enter or Ctrl/Cmd+S
+async function submitEditedEntry() {
+  const overlay = document.getElementById("node-overlay");
+  const textarea = document.getElementById("edit-node-content");
+
+  // different error handling attempt
+  try {
+    await invoke("update_note", { 
+        filename: currentEditingFilename, 
+        content: textarea.value,
+        favorite: currentEditingFavorite 
+    });
+
+    textarea.value = "";
+    closeOverlay(overlay);
+    LoadAndRenderNotes();
+    showNotification(t("edit_entry_saved_toast"), "success");
+      
+  } catch (error) {
+    showNotification(t("edit_save_error_toast"), "error");
+  }
+}
+
 
 // ============================================================
 // DELETE ENTRY OVERLAY
@@ -711,6 +774,7 @@ function DeleteOverlay() {
 
       closeOverlay(overlay);
       LoadAndRenderNotes();
+      showNotification(t("delete_entry_deleted_toast"), "success");
 
     } catch (error) {
       showNotification(t("delete_error_toast"), "error");
@@ -743,6 +807,24 @@ function SearchFunctionality() {
     
     // ready to write immediatelly
     searchInput.focus();
+  });
+
+  // ctrl/cmd+f keyword shortcut
+  document.addEventListener("keydown", (event) => {
+    
+    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "f") {
+
+      btnSearch.style.display = "none";
+      searchWrapper.classList.remove("hidden");
+        
+      // giving sidebar closing and opening fixed position
+      sidebar.classList.remove("collapsed");
+      
+      NavigateTo("view-journal");
+      
+      // ready to write immediatelly
+      searchInput.focus();;
+    }
   });
 
   // closing search (mostly html adjustments)

@@ -356,9 +356,11 @@ function NodeOverlay() {
   });
 
   // ctrl/cmd+n keyword shortcut
-  content.addEventListener("keydown", (event) => {
+  document.addEventListener("keydown", (event) => {
     
     if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "n") {
+
+      event.preventDefault();
 
       // clearing content before the window is shown
       document.getElementById("node-content").value = "";
@@ -401,15 +403,10 @@ function NodeOverlay() {
   // Ctrl/Cmd+Enter saves + EXIT the textarea, Ctrl/Cmd+S handle this situation the exact same way (calls same function below)
   content.addEventListener("keydown", (event) => {
 
-    if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
-      event.preventDefault();
-      submitNewEntry();
-    }
-
-    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "s") {
-      event.preventDefault();
-      submitNewEntry();
-    }
+    if ((event.metaKey || event.ctrlKey) && (event.key === "Enter" || event.key.toLowerCase() === "s")) {
+    event.preventDefault(); 
+    submitNewEntry();
+  }
   });
 }
 
@@ -417,6 +414,7 @@ function NodeOverlay() {
 // called from the "Add Entry" button or Ctrl/Cmd+Enter or Ctrl/Cmd+S (must by async)
 async function submitNewEntry() {
   const overlay = document.getElementById("node-overlay");
+  const textarea = document.getElementById("node-content");
 
   try {
       // we want filename + extract data from element (return je result || string = error)
@@ -432,7 +430,7 @@ async function submitNewEntry() {
       // ff Rust returns Err("error"), the code immediately jumps to the `catch` block
       await invoke("insert_note", {
         filename: newNoteData,
-        content: content.value
+        content: textarea.value
       });
 
       closeOverlay(overlay);
@@ -711,12 +709,7 @@ function EditOverlay(){
   // Ctrl/Cmd+Enter saves + EXIT the textarea, Ctrl/Cmd+S handle this situation the exact same way (calls same function below)
   textarea.addEventListener("keydown", (event) => {
 
-    if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
-      event.preventDefault();
-      submitEditedEntry();
-    }
-
-    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "s") {
+    if ((event.metaKey || event.ctrlKey) && (event.key === "Enter" || event.key.toLowerCase() === "s")) {
       event.preventDefault();
       submitEditedEntry();
     }
@@ -726,7 +719,7 @@ function EditOverlay(){
 // saves changes to whichever entry is currently open for editing
 // called from the "Save Entry" button or Ctrl/Cmd+Enter or Ctrl/Cmd+S
 async function submitEditedEntry() {
-  const overlay = document.getElementById("node-overlay");
+  const overlay = document.getElementById("detail-content-overlay");
   const textarea = document.getElementById("edit-node-content");
 
   // different error handling attempt

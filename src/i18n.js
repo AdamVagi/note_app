@@ -83,8 +83,8 @@ export const translations = {
     feedback_message_placeholder: "What would you change?",
     feedback_submit: "Send Feedback",
     feedback_success_toast: "Thanks for the feedback!",
-    feedback_error_toast: "Something went wrong while sending your feedback. Please try again.",
-    feedback_network_error_toast: "Couldn't reach the feedback server. Check your internet connection.",
+    feedback_error_toast: "Something went wrong while sending your feedback. Please try again",
+    feedback_network_error_toast: "Couldn't reach the feedback server. Check your internet connection",
 
     // new entry overlay
     new_overlay_title: "New Journal Entry",
@@ -92,52 +92,54 @@ export const translations = {
     markdown_hint: "Markdown is supported: **bold**, *italic*, # title, - list",
     new_entry_hint: "Your entry text after insertion...",
     new_entry_add: "Add Entry",
-    new_entry_create_error_toast: "Couldn't create a new entry. Check that the app can write to disk.",
-    new_entry_save_error_toast: "Saving the entry failed. Your text is still here - please try again.",
+    new_entry_create_error_toast: "Couldn't create a new entry. Check that the app can write to disk",
+    new_entry_save_error_toast: "Saving the entry failed. Your text is still here - please try again",
 
     // edit entry overlay
     edit_overlay_title: "Edit Entry",
     edit_overlay_placeholder: "Write your entry here...",
     edit_overlay_submit: "Save Entry",
-    edit_save_error_toast: "Saving your changes failed. Please try again.",
+    edit_save_error_toast: "Saving your changes failed. Please try again",
  
     // delete confirmation overlay
     delete_overlay_title: "Delete Entry?",
     delete_overlay_desc: "This can't be undone. Are you sure you want to delete this entry?",
     delete_confirm: "Delete",
     delete_cancel: "Cancel",
-    delete_error_toast: "Couldn't delete this entry. Please try again.",
+    delete_error_toast: "Couldn't delete this entry. Please try again",
  
     // entry cards
     entry_edit_title: "Edit entry",
     entry_delete_title: "Delete entry",
     empty_entry: "Empty Journal…",
-    favorite_toggle_error_toast: "Couldn't update favorites. Please try again.",
+    favorite_toggle_error_toast: "Couldn't update favorites. Please try again",
  
     // favorites sidebar list
-    favorites_empty: "No favorite entries yet.",
+    favorites_empty: "No favorite entries yet",
  
     // empty states
     empty_no_entries_heading: "Nothing here yet",
     empty_no_entries_body: "Click <strong>+ New Journal</strong> in the left menu and write your first note!",
-    empty_no_search_results: "No entries match your search.",
+    empty_no_search_results: "No entries match your search",
 
     // success toasts for actions whose result isn't obvious enough on its own 
-    new_entry_created_toast: "Entry created.",
-    edit_entry_saved_toast: "Entry saved.",
-    delete_entry_deleted_toast: "Entry deleted.",
+    new_entry_created_toast: "Entry created",
+    edit_entry_saved_toast: "Entry saved",
+    delete_entry_deleted_toast: "Entry deleted",
  
-    /* TODO: tohle je ještě diskutabilní zatím (ještě nevím, kam přesně to dám)
-    // Keyboard shortcuts (Settings panel). Only the description translates -
-    // the key combo itself (N, F, S, Enter, etc.) is language-independent
-    // and is built directly in JS as <kbd> elements.
-    shortcuts_heading: "Keyboard Shortcuts",
+    // keyboard shortcuts 
+    shortcuts_label: "Keyboard Shortcuts:",
     shortcuts_or: "or",
     shortcuts_new_entry_desc: "New entry",
     shortcuts_search_desc: "Search",
     shortcuts_save_desc: "Save",
     shortcuts_close_desc: "Close dialog",
-    shortcuts_settings_desc: "Open settings",*/
+
+    //paypal
+    support_label: "Enjoying the app?",
+    support_desc: "Support its development - completely optional",
+    support_button: "Donate",
+
   },
  
   cs: {
@@ -182,7 +184,7 @@ export const translations = {
     reset_label: "Obnovit nastavení:",
     reset_desc: "Obnovit výchozí nastavení rozhraní",
     reset_button: "Obnovit výchozí",
-    reset_toast: "Nastavení bylo obnoveno na výchozí hodnoty.",
+    reset_toast: "Nastavení bylo obnoveno na výchozí hodnoty",
  
     // about panel
     about_heading: "O aplikaci",
@@ -207,8 +209,8 @@ export const translations = {
     feedback_message_placeholder: "Co byste změnili?",
     feedback_submit: "Odeslat zpětnou vazbu",
     feedback_success_toast: "Díky za zpětnou vazbu!",
-    feedback_error_toast: "Při odesílání zpětné vazby se něco pokazilo. Zkuste to prosím znovu.",
-    feedback_network_error_toast: "Nepodařilo se spojit se serverem. Zkontrolujte připojení k internetu.",
+    feedback_error_toast: "Při odesílání zpětné vazby se něco pokazilo. Zkuste to prosím znovu",
+    feedback_network_error_toast: "Nepodařilo se spojit se serverem. Zkontrolujte připojení k internetu",
  
     // new entry overlay
     new_overlay_title: "Nový zápis do deníku",
@@ -216,30 +218,30 @@ export const translations = {
     markdown_hint: "Markdown je podporován: **tučné**, *kurzíva*, # nadpis, - seznam",
     new_entry_hint: "Váš text po vložení...",
     new_entry_add: "Přidat záznam",
-    new_entry_create_error_toast: "Nepodařilo se vytvořit nový záznam. Zkontrolujte, zda může aplikace zapisovat na disk.",
-    new_entry_save_error_toast: "Uložení záznamu selhalo. Váš text zůstal zachován - zkuste to prosím znovu.",
+    new_entry_create_error_toast: "Nepodařilo se vytvořit nový záznam. Zkontrolujte, zda může aplikace zapisovat na disk",
+    new_entry_save_error_toast: "Uložení záznamu selhalo. Váš text zůstal zachován - zkuste to prosím znovu",
  
     // edit entry overlay
     edit_overlay_title: "Upravit záznam",
     edit_overlay_placeholder: "Napište svůj záznam sem...",
     edit_overlay_submit: "Uložit záznam",
-    edit_save_error_toast: "Uložení změn selhalo. Zkuste to prosím znovu.",
+    edit_save_error_toast: "Uložení změn selhalo. Zkuste to prosím znovu",
  
     // delete confirmation overlay
     delete_overlay_title: "Smazat záznam?",
     delete_overlay_desc: "Tuto akci nelze vzít zpět. Opravdu chcete tento záznam smazat?",
     delete_confirm: "Smazat",
     delete_cancel: "Zrušit",
-    delete_error_toast: "Záznam se nepodařilo smazat. Zkuste to prosím znovu.",
+    delete_error_toast: "Záznam se nepodařilo smazat. Zkuste to prosím znovu",
  
     // entry cards
     entry_edit_title: "Upravit záznam",
     entry_delete_title: "Smazat záznam",
     empty_entry: "Prázdný záznam…",
-    favorite_toggle_error_toast: "Nepodařilo se upravit oblíbené. Zkuste to prosím znovu.",
+    favorite_toggle_error_toast: "Nepodařilo se upravit oblíbené. Zkuste to prosím znovu",
  
     // favorites sidebar list
-    favorites_empty: "Zatím žádné oblíbené záznamy.",
+    favorites_empty: "Zatím žádné oblíbené záznamy",
  
     // empty states
     empty_no_entries_heading: "Zatím tu nic není",
@@ -247,18 +249,23 @@ export const translations = {
     empty_no_search_results: "Žádné záznamy neodpovídají vašemu hledání.",
 
     // more success toast messages  
-    new_entry_created_toast: "Záznam byl vytvořen.",
-    edit_entry_saved_toast: "Záznam byl uložen.",
-    delete_entry_deleted_toast: "Záznam byl smazán.",
+    new_entry_created_toast: "Záznam byl vytvořen",
+    edit_entry_saved_toast: "Záznam byl uložen",
+    delete_entry_deleted_toast: "Záznam byl smazán",
  
-    /* TODO: diskutabilní czech version
-    shortcuts_heading: "Klávesové zkratky",
+    // keyboard shortcuts 
+    shortcuts_label: "Klávesové zkratky:",
     shortcuts_or: "nebo",
     shortcuts_new_entry_desc: "Nový záznam",
     shortcuts_search_desc: "Hledat",
     shortcuts_save_desc: "Uložit",
     shortcuts_close_desc: "Zavřít dialog",
-    shortcuts_settings_desc: "Otevřít nastavení",*/
+
+    //paypal
+    support_label: "Líbí se vám aplikace?",
+    support_desc: "Podpořte její vývoj - zcela dobrovolné",
+    support_button: "Přispět",
+
   },
 };
 

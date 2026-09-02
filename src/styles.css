@@ -48,6 +48,10 @@
   --accent-yellow-star: #eab308;
   --link-color: #8888ff;
 
+  --donate-bg: #3a1e26;
+  --donate-text: #fecdd3;
+  --donate-icon: #fb7185;
+
   --card-bg: var(--bg-card);
   --card-border: var(--border-color);
 }
@@ -81,6 +85,10 @@
   --accent-yellow: #8a4c00;
   --accent-yellow-star: #f59e0b;
   --link-color: #075985;
+
+  --donate-bg: #fce7f0;
+  --donate-text: #9d174d;
+  --donate-icon: #db2777;
  
   --card-bg: var(--bg-card);
   --card-border: var(--border-color);
@@ -533,6 +541,50 @@ body {
 .settings-group:last-child {
   margin-bottom: 0;
 }
+
+.setting-item.shortcuts-wrap {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.shortcuts-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: max-content auto; 
+  gap: 12px 24px; 
+  align-items: center; 
+  width: 100%; 
+}
+
+.shortcuts-list li {
+  display: contents; 
+}
+
+.shortcuts-list .keys {
+  text-align: left; 
+}
+
+.shortcuts-list .desc {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  text-align: left;
+}
+
+.shortcuts-list kbd {
+  display: inline-block;
+  font-family: var(--main-font-family);
+  font-size: 0.8em;
+  font-weight: 600;
+  color: var(--text-main);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  padding: 2px 7px;
+  margin-right: 2px;
+}
  
 .settings-group h3 {
   font-size: 0.75rem;
@@ -851,6 +903,21 @@ input:checked + .slider:before {
 .btn-link:hover {
   background: var(--border-secondary);
   border-color: var(--border-color);
+}
+
+.btn-donate {
+  background: var(--donate-bg);
+  border-color: var(--donate-bg);
+  color: var(--donate-text);
+}
+ 
+.btn-donate svg {
+  color: var(--donate-icon);
+}
+ 
+.btn-donate:hover {
+  filter: brightness(1.08);
+  border-color: var(--donate-icon);
 }
  
 .about-copyright {
